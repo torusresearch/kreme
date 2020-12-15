@@ -20,7 +20,7 @@
     "jest": "^26.4.2",
     "maci-crypto": "0.3.2",
     "shelljs": "^0.8.4",
-    "snarkjs": "../snarkjs/",
+    "snarkjs": "https://github.com/weijiekoh/snarkjs.git#7c9fcaa19c98ee0ad00a4429f044905e1e202dd0",
     "ts-jest": "^26.4.1",
     "typescript": "^4.0.3"
   }
