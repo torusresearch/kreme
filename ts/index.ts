@@ -102,7 +102,7 @@ const plaintextToChunks = (plaintext: string) => {
 }
 
 const main = async () => {
-    const snarkjsCmd = 'node ' + path.join(__dirname, '../../snarkjs/build/cli.cjs')
+    const snarkjsCmd = 'npx snarkjs'
 
     const plaintext = 
         '{"email": "alice@company.xyz"}xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx' +   
@@ -118,6 +118,7 @@ const main = async () => {
 
     const chunks = plaintextToChunks(plaintext)
 
+    console.log('Number of bytes:', chunks.length * 128 / 8)
 
     const expectedHash = sha256BufferToHex(
         bitArray2buffer(plaintext2paddedBitArray(plaintext))
@@ -126,7 +127,7 @@ const main = async () => {
     const expectedHashBuf = Buffer.from(expectedHash, 'hex')
 
     const start = Date.now()
-    const circuit = await compileAndLoadCircuit('test/jwtProver.circom')
+    //const circuit = await compileAndLoadCircuit('test/jwtProver.circom')
     const compiled = Date.now()
     console.log(
         'compileAndLoadCircuit() took:',
@@ -156,7 +157,7 @@ const main = async () => {
     shelljs.exec(witnessCmd)
     const endWitnessGen = Date.now()
     console.log(
-        'Witness generation took:',
+        'Witness generation time (in total):',
         (endWitnessGen - startWitnessGen) / 1000,
     )
 
@@ -176,34 +177,34 @@ const main = async () => {
 
     // Generate proof
     const proofStart = Date.now()
-    shelljs.exec(`../zkutil/zkutil prove -c ./build/jwtProver.r1cs -p ./build/jwtProver.params -r ./build/proof.json -o ./build/public_inputs.json -w ./build/witness.json`)
+    shelljs.exec(`zkutil prove -c ./build/jwtProver.r1cs -p ./build/jwtProver.params -r ./build/proof.json -o ./build/public_inputs.json -w ./build/witness.json`)
     const proofEnd = Date.now()
 
     console.log('Proving time:', (proofEnd - proofStart) / 1000, '(can be optimised)')
 
-    const concatBits: Number[] = []
-    for (let i = 0; i < chunks.length * 128; i ++) {
-        const bit = Number(getSignalByName(circuit, witness, `main.concatBits[${i}]`).toString())
-        concatBits.push(bit)
-    }
+    //const concatBits: Number[] = []
+    //for (let i = 0; i < chunks.length * 128; i ++) {
+        //const bit = Number(getSignalByName(circuit, witness, `main.concatBits[${i}]`).toString())
+        //concatBits.push(bit)
+    //}
 
-    const bitStr = concatBits.join('')
-    const bitBigInt = BigInt('0b' + bitStr)
-    const bitBuf = Buffer.from(bitBigInt.toString(16), 'hex')
-    console.log(bitBuf.toString('utf-8'))
+    //const bitStr = concatBits.join('')
+    //const bitBigInt = BigInt('0b' + bitStr)
+    //const bitBuf = Buffer.from(bitBigInt.toString(16), 'hex')
+    //console.log(bitBuf.toString('utf-8'))
 
-    console.log('Native hash:', expectedHash)
+    //console.log('Native hash:', expectedHash)
     
-    const hashBits: Number[] = []
-    for (let i = 0; i < 256; i ++) {
-        const bit = Number(getSignalByName(circuit, witness, `main.hash[${i}]`).toString())
-        hashBits.push(bit)
-    }
+    //const hashBits: Number[] = []
+    //for (let i = 0; i < 256; i ++) {
+        //const bit = Number(getSignalByName(circuit, witness, `main.hash[${i}]`).toString())
+        //hashBits.push(bit)
+    //}
 
-    const hashBitStr = hashBits.join('')
-    const hashBitBigInt = BigInt('0b' + hashBitStr)
-    const hashBitBuf = bitArray2buffer(hashBits)
-    console.log('Circuit hash:', hashBitBuf.toString('hex'))
+    //const hashBitStr = hashBits.join('')
+    //const hashBitBigInt = BigInt('0b' + hashBitStr)
+    //const hashBitBuf = bitArray2buffer(hashBits)
+    //console.log('Circuit hash:', hashBitBuf.toString('hex'))
 }
 
 
