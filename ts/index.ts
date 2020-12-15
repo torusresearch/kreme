@@ -102,7 +102,7 @@ const plaintextToChunks = (plaintext: string) => {
 }
 
 const main = async () => {
-    const snarkjsCmd = 'node ' + path.join(__dirname, '../node_modules/snarkjs/build/cli.cjs')
+    const snarkjsCmd = 'node ' + path.join(__dirname, '../../snarkjs/build/cli.cjs')
 
     const plaintext = 
         '{"email": "alice@company.xyz"}xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx' +   
@@ -128,14 +128,18 @@ const main = async () => {
     const start = Date.now()
     const circuit = await compileAndLoadCircuit('test/jwtProver.circom')
     const compiled = Date.now()
-    console.log('compileAndLoadCircuit() took:', (compiled - start) / 1000, '(only needs to be done once)')
+    console.log(
+        'compileAndLoadCircuit() took:',
+        (compiled - start) / 1000,
+        '(only needs to be done once)',
+    )
 
     const circuitInputs = {
         chunks,
         expectedHash: [
-            BigInt('0x' + expectedHashBuf.slice(0, 16).toString('hex')).toString(),
-            BigInt('0x' + expectedHashBuf.slice(16, 32).toString('hex')).toString(),
-        ]
+            BigInt('0x' + expectedHashBuf.slice(0, 16).toString('hex')),
+            BigInt('0x' + expectedHashBuf.slice(16, 32).toString('hex')),
+        ].map((x) => x.toString())
     }
 
     // Save input.json
@@ -146,13 +150,25 @@ const main = async () => {
 
     const startWitnessGen = Date.now()
     // Generate the witness
-    const witnessCmd = `${snarkjsCmd} wc ./build/jwtProver.wasm ./build/input.json ./build/witness.wtns`
+    const witnessCmd =
+        `${snarkjsCmd} wc ./build/jwtProver.wasm ./build/input.json ./build/witness.wtns`
+    console.log(witnessCmd)
     shelljs.exec(witnessCmd)
+    const endWitnessGen = Date.now()
+    console.log(
+        'Witness generation took:',
+        (endWitnessGen - startWitnessGen) / 1000,
+    )
 
-    const witnessConvertCmd = `${snarkjsCmd} wej ./build/witness.wtns ./build/witness.json`
+    const startWitnessConversion = Date.now()
+    const witnessConvertCmd =
+        `${snarkjsCmd} wej ./build/witness.wtns ./build/witness.json`
     shelljs.exec(witnessConvertCmd)
-    const witnessGenerated = Date.now()
-    console.log('Witness generation took:', (witnessGenerated - startWitnessGen) / 1000)
+    const endWitnessConversion = Date.now()
+    console.log(
+        'Witness conversion took:',
+        (endWitnessConversion - startWitnessConversion) / 1000,
+    )
 
     const witness = unstringifyBigInts(
             JSON.parse(fs.readFileSync('./build/witness.json').toString())
@@ -160,7 +176,7 @@ const main = async () => {
 
     // Generate proof
     const proofStart = Date.now()
-    shelljs.exec(`zkutil prove -c ./build/jwtProver.r1cs -p ./build/jwtProver.params -r ./build/proof.json -o ./build/input.json -w ./build/witness.json`)
+    shelljs.exec(`../zkutil/zkutil prove -c ./build/jwtProver.r1cs -p ./build/jwtProver.params -r ./build/proof.json -o ./build/public_inputs.json -w ./build/witness.json`)
     const proofEnd = Date.now()
 
     console.log('Proving time:', (proofEnd - proofStart) / 1000, '(can be optimised)')
