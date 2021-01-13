@@ -1,34 +1,46 @@
+import * as assert from 'assert'
 import { plaintextToChunks, plaintext2paddedBitArray } from '../'
 import { genWitness, getSignalByName } from './utils'
 const ff = require('ffjavascript')
 const stringifyBigInts: (obj: object) => any = ff.utils.stringifyBigInts
 jest.setTimeout(90000)
 
-const circuit = 'emailDomainProver'
+const circuit = 'emailDomainProver_test'
 const domain = 'company.xyz'
 const plaintext = `{"email": "alice@${domain}"}`
-const CHUNK_LENGTH = 248
+
+const strToByteArr = (str: string, len: number): BigInt[] => {
+    assert(len >= str.length)
+    const result: BigInt[] = []
+    for (let i = 0; i < len; i ++) {
+        result.push(BigInt(0))
+    }
+    for (let i = 0; i < str.length; i ++) {
+        const c = str[i]
+        const b = BigInt('0x' + Buffer.from(c).toString('hex'))
+        result[len - i - 1] = b
+    }
+    return result
+}
 
 describe('JSON field prover for an email domain name', () => {
-    it('Should prove the existence of a domain name in the correct position', async () => {
-        let p = BigInt(
-            '0x' + Buffer.from(plaintext, 'utf-8').toString('hex'),
-        ).toString(2)
-        while (p.length % 8 !== 0) {
-            p = '0' + p
-        }
-        const paddingBitsLength = 254 - p.length 
+    let circuitInputs
+    beforeAll(() => {
+        const p = strToByteArr(plaintext, 64)
+        const domainName = strToByteArr(domain, 64)
 
-        const circuitInputs = stringifyBigInts({
+        circuitInputs = stringifyBigInts({
             plaintext: p,
+            domainName,
+            emailValueEndPos: 28,
+            emailNameStartPos: 1,
             numSpacesBeforeColon: 0,
             numSpacesAfterColon: 0,
-            numDomainNameBytes: domain.length,
-            emailNameEndPos: 28,
-            emailNameStartPos: 1,
-            paddingBitsLength,
         })
+    })
 
+    it('Should prove the existence of a domain name in the correct position', async () => {
         const witness = await genWitness(circuit, circuitInputs)
+        expect(witness.length > 0).toBeTruthy()
     })
 })

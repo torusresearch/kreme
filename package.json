@@ -9,6 +9,8 @@
         "build": "tsc",
         "test": "jest",
         "test-jwtProver": "jest circuits.test.ts",
+        "test-matcher": "jest matcher.test.ts",
+        "test-substringMatcher": "jest substringMatcher.test.ts",
         "test-selector": "jest selector.test.ts",
         "test-slicer": "jest slicer.test.ts",
         "test-emailDomainProver": "jest emailDomainProver.test.ts",
