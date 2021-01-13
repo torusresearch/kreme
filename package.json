@@ -1,27 +1,34 @@
 {
-  "name": "jwt_zkp",
-  "version": "0.0.1",
-  "description": "",
-  "main": "build/index.js",
-  "scripts": {
-    "watch": "tsc --watch",
-    "build": "tsc",
-    "test": "jest",
-    "test-jwtProver": "jest circuits.test.ts"
-  },
-  "author": "Koh Wei Jie",
-  "license": "Copyright",
-  "dependencies": {
-    "@types/jest": "^26.0.14",
-    "@types/node": "^14.11.2",
-    "assert": "^2.0.0",
-    "circom": "^0.5.33",
-    "circomlib": "^0.3.0",
-    "jest": "^26.4.2",
-    "maci-crypto": "0.3.2",
-    "shelljs": "^0.8.4",
-    "snarkjs": "https://github.com/weijiekoh/snarkjs.git#edae4af0b10d607d9f247993f662c84f7ecc2a1a",
-    "ts-jest": "^26.4.1",
-    "typescript": "^4.0.3"
-  }
+    "name": "jwt_zkp",
+    "version": "0.0.1",
+    "description": "",
+    "main": "build/index.js",
+    "scripts": {
+        "circom-helper": "circom-helper -c ./circomHelperConfig.json -nc -b ./build/test/ -p 9001",
+        "watch": "tsc --watch",
+        "build": "tsc",
+        "test": "jest",
+        "test-jwtProver": "jest circuits.test.ts",
+        "test-selector": "jest selector.test.ts",
+        "test-slicer": "jest slicer.test.ts",
+        "test-emailDomainProver": "jest emailDomainProver.test.ts",
+        "test-emailDomainProver-debug": "node --inspect-brk ./node_modules/.bin/jest emailDomainProver.test.ts"
+    },
+    "author": "Koh Wei Jie",
+    "license": "Copyright",
+    "dependencies": {
+        "@types/jest": "^26.0.14",
+        "@types/node": "^14.11.2",
+        "assert": "^2.0.0",
+        "axios": "^0.21.1",
+        "circom": "^0.5.33",
+        "circom-helper": "0.0.15",
+        "circomlib": "^0.3.0",
+        "jest": "^26.4.2",
+        "maci-crypto": "0.3.2",
+        "shelljs": "^0.8.4",
+        "snarkjs": "https://github.com/weijiekoh/snarkjs.git#edae4af0b10d607d9f247993f662c84f7ecc2a1a",
+        "ts-jest": "^26.4.1",
+        "typescript": "^4.0.3"
+    }
 }

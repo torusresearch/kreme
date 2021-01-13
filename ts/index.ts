@@ -75,22 +75,22 @@ const sha256BufferToHex = (b: Buffer) => {
         .digest('hex')
 }
 
-const plaintext2paddedBitArray = (plaintext: string) => {
+const plaintext2paddedBitArray = (plaintext: string, chunkLength: number) => {
     const b = Buffer.from(plaintext, "utf8")
     const p = BigInt('0x' + b.toString('hex'))
     let bits = p.toString(2)
 
-    while (bits.length % CHUNK_LENGTH > 0) {
+    while (bits.length % chunkLength > 0) {
         bits = '0' + bits
     }
 
     return bits
 }
 
-const plaintextToChunks = (plaintext: string) => {
-    const bits = plaintext2paddedBitArray(plaintext)
+const plaintextToChunks = (plaintext: string, chunkLength: number) => {
+    const bits = plaintext2paddedBitArray(plaintext, chunkLength)
     const chunks: BigInt[] = []
-    for (let i = 0; i < bits.length; i += CHUNK_LENGTH) {
+    for (let i = 0; i < bits.length; i += chunkLength) {
         const chunk = BigInt(
             '0b' +
             bits.slice(i, i + CHUNK_LENGTH)
@@ -116,12 +116,12 @@ const main = async () => {
         'zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz' +
         'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
 
-    const chunks = plaintextToChunks(plaintext)
+    const chunks = plaintextToChunks(plaintext, CHUNK_LENGTH)
 
     console.log('Number of bytes:', chunks.length * 128 / 8)
 
     const expectedHash = sha256BufferToHex(
-        bitArray2buffer(plaintext2paddedBitArray(plaintext))
+        bitArray2buffer(plaintext2paddedBitArray(plaintext, CHUNK_LENGTH))
     )
 
     const expectedHashBuf = Buffer.from(expectedHash, 'hex')
@@ -216,4 +216,4 @@ if (require.main === module) {
     }
 }
 
-export {}
+export { plaintextToChunks, plaintext2paddedBitArray }
