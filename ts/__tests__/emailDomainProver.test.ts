@@ -1,5 +1,5 @@
 import * as assert from 'assert'
-import { plaintextToChunks, plaintext2paddedBitArray } from '../'
+import { genSubstrByteArr, strToByteArr } from '../'
 import { genWitness, getSignalByName } from './utils'
 const ff = require('ffjavascript')
 const stringifyBigInts: (obj: object) => any = ff.utils.stringifyBigInts
@@ -7,39 +7,92 @@ jest.setTimeout(90000)
 
 const circuit = 'emailDomainProver_test'
 const domain = 'company.xyz'
-const plaintext = `{"email": "alice@${domain}"}`
+const plaintext = `{"blah": 123, "email": "alice@${domain}", "foo": "bar"}`
+const email = `"email": "alice@${domain}"`
+const NUM_BYTES = 320
+const NUM_EMAIL_SUBSTR_BYTES = 64
 
-const strToByteArr = (str: string, len: number): BigInt[] => {
-    assert(len >= str.length)
-    const result: BigInt[] = []
-    for (let i = 0; i < len; i ++) {
-        result.push(BigInt(0))
-    }
-    for (let i = 0; i < str.length; i ++) {
-        const c = str[i]
-        const b = BigInt('0x' + Buffer.from(c).toString('hex'))
-        result[len - i - 1] = b
-    }
-    return result
-}
+const p = strToByteArr(plaintext, NUM_BYTES)
+const domainName = strToByteArr(domain, NUM_EMAIL_SUBSTR_BYTES)
+const emailSubstr = genSubstrByteArr(
+    plaintext,
+    email,
+    NUM_BYTES,
+    NUM_EMAIL_SUBSTR_BYTES,
+)
+const emailValueEndPos = email.length - 1
+const emailNameStartPos = 21
+const numSpacesBeforeColon = 0
+const numSpacesAfterColon = 1
 
 describe('JSON field prover for an email domain name', () => {
-    let circuitInputs
-    beforeAll(() => {
-        const p = strToByteArr(plaintext, 64)
-        const domainName = strToByteArr(domain, 64)
+    it('genSubstrByteArr should work correctly', () => {
+        const p = "0123456789"
+        const e = "56789"
+        const emailSubstrByteArr = genSubstrByteArr(p, e, 15, 12)
+        const s = emailSubstrByteArr.map((x) => Buffer.from(x.toString(16), 'hex').toString('utf-8'))
+        expect(s).toEqual(
+            ['',  '',  '0', '1', '2', '3', '4', '5', '6', '7', '8', '9']
+        )
+    })
 
-        circuitInputs = stringifyBigInts({
-            plaintext: p,
-            domainName,
-            emailValueEndPos: 28,
-            emailNameStartPos: 1,
-            numSpacesBeforeColon: 0,
-            numSpacesAfterColon: 0,
-        })
+    it('genSubstrByteArr should work correctly', () => {
+        const p = "0123456789"
+        const e = "0123"
+        const emailSubstrByteArr = genSubstrByteArr(p, e, 15, 5)
+        const s = emailSubstrByteArr.map((x) => Buffer.from(x.toString(16), 'hex').toString('utf-8'))
+        expect(s).toEqual([ '0', '1', '2', '3', '4' ])
+    })
+
+    it('genSubstrByteArr should work correctly', () => {
+        const p = '用户@例子.广告'
+        const e = '例子.广告'
+        const emailSubstrByteArr = genSubstrByteArr(p, e, 50, 20)
+        //const s = emailSubstrByteArr.map((x) => Buffer.from(x.toString(16), 'hex').toString('utf-8'))
+        //console.log(emailSubstrByteArr)
+        //console.log(strToByteArr(e, 20))
+        expect(emailSubstrByteArr).toEqual(
+            [
+                231, 148, 168, 230,
+                136, 183,  64, 228,
+                190, 139, 229, 173,
+                144,  46, 229, 185,
+                191, 229, 145, 138,
+            ].map((x) => BigInt(x))
+        )
+    })
+
+    it('genSubstrByteArr should work correctly (failure cases)', () => {
+        expect.assertions(2)
+        const p = "0123456789"
+        const e = "0123"
+        expect(() => {
+            genSubstrByteArr(p, e, 15, 2)
+        }).toThrow()
+
+        expect(() => {
+            genSubstrByteArr(p, e, 15, 20)
+        }).toThrow()
+    })
+
+    it('strToByteArr should work correctly', () => {
+        const text = '用户@例子.广告'
+        const buf = Buffer.from(text)
+        const byteArr = strToByteArr(text, buf.length)
+        expect(byteArr.length).toEqual(buf.length)
+        expect(byteArr.length).toEqual(20)
     })
 
     it('Should prove the existence of a domain name in the correct position', async () => {
+        const circuitInputs = stringifyBigInts({
+            plaintext: p,
+            emailSubstr,
+            domainName,
+            emailNameStartPos,
+            emailValueEndPos,
+            numSpacesBeforeColon,
+            numSpacesAfterColon,
+        })
         const witness = await genWitness(circuit, circuitInputs)
         expect(witness.length > 0).toBeTruthy()
     })

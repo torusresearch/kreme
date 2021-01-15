@@ -11,6 +11,82 @@ const unstringifyBigInts: (obj: object) => any = ff.utils.unstringifyBigInts
 const MAX_PLAINTEXT_BITS = 512
 const CHUNK_LENGTH = 128
 
+// Convert a string to an array of BigInts where each BigInt represents a byte
+const strToByteArr = (str: string, len: number): BigInt[] => {
+    const result: BigInt[] = []
+    const buf = Buffer.from(str)
+    assert(len >= buf.length)
+
+    for (let i = 0; i < len - buf.length; i ++) {
+        result.push(BigInt(0))
+    }
+
+    for (let i = 0; i < buf.length; i ++) {
+        result.push(BigInt(buf[i]))
+    }
+    assert(result.length === len)
+    return result
+}
+
+const bufToBigIntArr = (buf: Buffer): BigInt[] => {
+    const result: BigInt[] = []
+    for (let i = 0 ; i < buf.length; i ++) {
+        result.push(BigInt(buf[i].toString()))
+    }
+    return result
+}
+
+const genSubstrByteArr = (
+    plaintext: string,
+    substr: string,
+    numPlaintextBytes: number,
+    numSubstrBytes: number,
+): BigInt[] => {
+
+    // substr must indeed be a substring of plaintext
+    const pos = plaintext.indexOf(substr)
+    assert(pos > -1)
+
+    assert(numPlaintextBytes >= numSubstrBytes)
+    
+    const p = strToByteArr(plaintext, numPlaintextBytes)
+    if (numPlaintextBytes === numSubstrBytes) {
+        return p
+    }
+
+    const result = bufToBigIntArr(Buffer.from(substr))
+    assert(numSubstrBytes >= result.length)
+
+    if (result.length === numSubstrBytes) {
+        return result
+    }
+
+    const post = plaintext.substr(pos + substr.length)
+    const postBytes = bufToBigIntArr(Buffer.from(post))
+
+    for (const b of postBytes) {
+        result.push(b)
+    }
+
+    if (result.length >= numSubstrBytes) {
+        return result.slice(0, numSubstrBytes)
+    }
+
+    const pre = plaintext.substr(0, pos)
+    const preBytes = bufToBigIntArr(Buffer.from(pre))
+    while (preBytes.length < numSubstrBytes) {
+        preBytes.unshift(BigInt(0))
+    }
+
+    let i = preBytes.length - 1
+    while (result.length < numSubstrBytes) {
+        const b = preBytes[i]
+        result.unshift(b)
+        i --
+    }
+    return result
+}
+
 const buffer2bitArray = (b) => {
     const res: Number[] = []
     for (let i=0; i<b.length; i++) {
@@ -216,4 +292,9 @@ if (require.main === module) {
     }
 }
 
-export { plaintextToChunks, plaintext2paddedBitArray }
+export {
+    plaintextToChunks,
+    plaintext2paddedBitArray,
+    genSubstrByteArr,
+    strToByteArr,
+}
