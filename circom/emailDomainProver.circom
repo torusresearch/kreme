@@ -28,37 +28,37 @@ template EmailDomainProver(numBytes, numEmailSubstrBytes) {
     signal input numSpacesBeforeColon;
     signal input numSpacesAfterColon;
 
-    /*// ------------------------------------------------------------------------*/
-    /*// 1. Check that emailValueEndPos is greater than at least*/
-    /*// numSpacesBeforeColon + numSpacesAfterColon + 12*/
-    /*// i.e. "email" : "foo@bar.com"*/
-    /*//      ^                     ^*/
-    /*//       6    n 1 n 1 1 1 1 1*/
-    /*component posChecker = GreaterThan(numBytesInBits);*/
-    /*posChecker.in[0] <== emailValueEndPos;*/
-    /*posChecker.in[1] <== numSpacesBeforeColon + numSpacesAfterColon + 12;*/
-    /*posChecker.out === 1;*/
+    // ------------------------------------------------------------------------
+    // 1. Check that emailValueEndPos is greater than at least
+    // numSpacesBeforeColon + numSpacesAfterColon + 12
+    // i.e. "email" : "foo@bar.com"
+    //      ^                     ^
+    //       6    n 1 n 1 1 1 1 1
+    component posChecker = GreaterThan(numBytesInBits);
+    posChecker.in[0] <== emailValueEndPos;
+    posChecker.in[1] <== numSpacesBeforeColon + numSpacesAfterColon + 12;
+    posChecker.out === 1;
 
-    /*// ------------------------------------------------------------------------*/
-    /*// 2. Check that `emailSubstr` is a substring of `plaintext`*/
-    /*component substrChecker = SubstringMatcher(numBytes, numEmailSubstrBytes);*/
-    /*for (var i = 0; i < numBytes; i ++) {*/
-        /*substrChecker.a[i] <== plaintext[i];*/
-    /*}*/
+    // ------------------------------------------------------------------------
+    // 2. Check that `emailSubstr` is a substring of `plaintext`
+    component substrChecker = SubstringMatcher(numBytes, numEmailSubstrBytes);
+    for (var i = 0; i < numBytes; i ++) {
+        substrChecker.a[i] <== plaintext[i];
+    }
 
-    /*for (var i = 0; i < numEmailSubstrBytes; i ++) {*/
-        /*substrChecker.b[i] <== emailSubstr[i];*/
-    /*}*/
-    /*substrChecker.out === 1;*/
+    for (var i = 0; i < numEmailSubstrBytes; i ++) {
+        substrChecker.b[i] <== emailSubstr[i];
+    }
+    substrChecker.out === 1;
 
-    /*// ------------------------------------------------------------------------*/
-    /*// 3. Check that the 7 bytes starting from emailSubstr[0]*/
-    /*// match the UTF-8 representation of `"email"`*/
-    /*component emailName = EmailName(numEmailSubstrBytes);*/
-    /*emailName.emailNameStartPos <== emailNameStartPos;*/
-    /*for (var i = 0; i < numEmailSubstrBytes; i ++) {*/
-        /*emailName.in[i] <== emailSubstr[i];*/
-    /*}*/
+    // ------------------------------------------------------------------------
+    // 3. Check that the 7 bytes starting from emailSubstr[0]
+    // match the UTF-8 representation of `"email"`
+    component emailName = EmailName(numEmailSubstrBytes);
+    emailName.emailNameStartPos <== emailNameStartPos;
+    for (var i = 0; i < numEmailSubstrBytes; i ++) {
+        emailName.in[i] <== emailSubstr[i];
+    }
 
     // 4. Check that there are numSpacesBeforeColon spaces starting from index
     // emailNameStartPos + 7
