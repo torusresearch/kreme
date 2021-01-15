@@ -6,19 +6,19 @@ jest.setTimeout(90000)
 const circuit = 'substringMatcher_test'
 
 describe('The SubstringMatcher circuit', () => {
-    //it('Should return 1 with valid inputs', async () => {
-        //const a: number[] = [0, 1, 2, 3, 4]
-        //const b: number[] = [0, 1]
+    it('Should return 1 with valid inputs', async () => {
+        const a: number[] = [0, 1, 2, 3, 4]
+        const b: number[] = [0, 1]
 
-        //const circuitInputs = stringifyBigInts({
-            //a,
-            //b,
-        //})
-        //const witness = await genWitness(circuit, circuitInputs)
-        //expect(witness.length > 0).toBeTruthy()
-        //const out = await getSignalByName(circuit, witness, `main.out`)
-        //expect(out).toEqual('1')
-    //})
+        const circuitInputs = stringifyBigInts({
+            a,
+            b,
+        })
+        const witness = await genWitness(circuit, circuitInputs)
+        expect(witness.length > 0).toBeTruthy()
+        const out = await getSignalByName(circuit, witness, `main.out`)
+        expect(out).toEqual('1')
+    })
 
     it('Should return 1 with valid inputs', async () => {
         const a: number[] = [0, 1, 2, 3, 4]

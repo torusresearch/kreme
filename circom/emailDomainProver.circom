@@ -4,6 +4,7 @@ include "./slicer.circom";
 include "./matcher.circom";
 include "./range.circom";
 include "./substringMatcher.circom";
+include "./endsWith.circom";
 
 // Proves the presence of a domain name in the `email` field of a secret JSON
 // string.
@@ -19,6 +20,7 @@ template EmailDomainProver(numBytes, numEmailSubstrBytes) {
     signal private input emailSubstr[numEmailSubstrBytes];
 
     signal input domainName[numEmailSubstrBytes];
+    signal input numDomainBytes;
 
     signal private input emailNameStartPos;
     signal private input emailValueEndPos;
@@ -26,53 +28,116 @@ template EmailDomainProver(numBytes, numEmailSubstrBytes) {
     signal input numSpacesBeforeColon;
     signal input numSpacesAfterColon;
 
-    // ------------------------------------------------------------------------
-    // 1. Check that emailValueEndPos is greater than at least
-    // numSpacesBeforeColon + numSpacesAfterColon + 12
-    // i.e. "email" : "foo@bar.com"
-    //      ^                     ^
-    //       6    n 1 n 1 1 1 1 1
-    component posChecker = GreaterThan(numBytesInBits);
-    posChecker.in[0] <== emailValueEndPos;
-    posChecker.in[1] <== numSpacesBeforeColon + numSpacesAfterColon + 12;
-    posChecker.out === 1;
+    /*// ------------------------------------------------------------------------*/
+    /*// 1. Check that emailValueEndPos is greater than at least*/
+    /*// numSpacesBeforeColon + numSpacesAfterColon + 12*/
+    /*// i.e. "email" : "foo@bar.com"*/
+    /*//      ^                     ^*/
+    /*//       6    n 1 n 1 1 1 1 1*/
+    /*component posChecker = GreaterThan(numBytesInBits);*/
+    /*posChecker.in[0] <== emailValueEndPos;*/
+    /*posChecker.in[1] <== numSpacesBeforeColon + numSpacesAfterColon + 12;*/
+    /*posChecker.out === 1;*/
 
-    // ------------------------------------------------------------------------
-    // 2. Check that `emailSubstr` is a substring of `plaintext`
-    component substrChecker = SubstringMatcher(numBytes, numEmailSubstrBytes);
-    for (var i = 0; i < numBytes; i ++) {
-        substrChecker.a[i] <== plaintext[i];
-    }
+    /*// ------------------------------------------------------------------------*/
+    /*// 2. Check that `emailSubstr` is a substring of `plaintext`*/
+    /*component substrChecker = SubstringMatcher(numBytes, numEmailSubstrBytes);*/
+    /*for (var i = 0; i < numBytes; i ++) {*/
+        /*substrChecker.a[i] <== plaintext[i];*/
+    /*}*/
 
-    for (var i = 0; i < numEmailSubstrBytes; i ++) {
-        substrChecker.b[i] <== emailSubstr[i];
-    }
-    substrChecker.out === 1;
+    /*for (var i = 0; i < numEmailSubstrBytes; i ++) {*/
+        /*substrChecker.b[i] <== emailSubstr[i];*/
+    /*}*/
+    /*substrChecker.out === 1;*/
 
-    // ------------------------------------------------------------------------
-    // 3. Check that the 7 bytes starting from emailSubstr[0]
-    // match the UTF-8 representation of `"email"`
-    component emailName = EmailName(numEmailSubstrBytes);
-    emailName.emailNameStartPos <== emailNameStartPos;
-    for (var i = 0; i < numEmailSubstrBytes; i ++) {
-        emailName.in[i] <== emailSubstr[i];
-    }
+    /*// ------------------------------------------------------------------------*/
+    /*// 3. Check that the 7 bytes starting from emailSubstr[0]*/
+    /*// match the UTF-8 representation of `"email"`*/
+    /*component emailName = EmailName(numEmailSubstrBytes);*/
+    /*emailName.emailNameStartPos <== emailNameStartPos;*/
+    /*for (var i = 0; i < numEmailSubstrBytes; i ++) {*/
+        /*emailName.in[i] <== emailSubstr[i];*/
+    /*}*/
 
     // 4. Check that there are numSpacesBeforeColon spaces starting from index
     // emailNameStartPos + 7
-    component spacesBeforeColon = SpacesBeforeColon(numEmailSubstrBytes);
-    spacesBeforeColon.emailNameStartPos <== emailNameStartPos;
-    spacesBeforeColon.numSpacesBeforeColon <== numSpacesBeforeColon;
+    component spacesBeforeColon = AreSpaces(numEmailSubstrBytes);
+    spacesBeforeColon.startPos <== emailNameStartPos;
+    spacesBeforeColon.numSpaces <== numSpacesBeforeColon;
     for (var i = 0; i < numEmailSubstrBytes; i ++) {
         spacesBeforeColon.in[i] <== emailSubstr[i];
     }
 
+    // 5. Check that there is a colon at index emailNameStartPos + 6 +
+    // numSpacesBeforeColon
+    //"email"<numSpacesBeforeColon>:  ...
+    component selectColon = Selector(numEmailSubstrBytes);
+    selectColon.index <== emailNameStartPos + 7 + numSpacesBeforeColon;
+    for (var i = 0; i < numEmailSubstrBytes; i ++) {
+        selectColon.in[i] <== emailSubstr[i];
+    }
+    selectColon.out === 0x3a;
+
+    // 6. Check that there are numSpacesAfterColon spaces starting from index
+    // emailNameStartPos + 7 + numSpacesBeforeColon + 1
+    component spacesAfterColon = AreSpaces(numEmailSubstrBytes);
+    spacesAfterColon.startPos <== emailNameStartPos + 7 + numSpacesBeforeColon + 1;
+    spacesAfterColon.numSpaces <== numSpacesAfterColon;
+    for (var i = 0; i < numEmailSubstrBytes; i ++) {
+        spacesAfterColon.in[i] <== emailSubstr[i];
+    }
+
+    // 7. Check that the byte at emailValueEndPos matches
+    // the UTF-8 representation of ".
+    component endQuote = Selector(numEmailSubstrBytes);
+    endQuote.index <== emailValueEndPos;
+    for (var i = 0; i < numEmailSubstrBytes; i ++) {
+        endQuote.in[i] <== emailSubstr[i];
+    }
+    endQuote.out === 0x22;
+
+    // 8. Check that emailSubstr contains domainName
+    component domainSlice = Slicer(numEmailSubstrBytes);
+    domainSlice.startIndex <== emailValueEndPos - numDomainBytes + 1;
+    domainSlice.len <== numDomainBytes;
+    for (var i = 0; i < numEmailSubstrBytes; i ++) {
+        domainSlice.in[i] <== emailSubstr[i];
+    }
+
+    component endsWith = EndsWith(numEmailSubstrBytes);
+    endsWith.targetLen <== numDomainBytes;
+    for (var i = 0; i < numEmailSubstrBytes; i ++) {
+        endsWith.in[i] <== domainSlice.out[i];
+        endsWith.target[i] <== domainName[i];
+    }
+    endsWith.out === 1;
+
+    // 9. Check that the 2 bytes before emailValueEndPos are not the UTF-8
+    // representation of \\.
+    component beforeLastQuot1 = Selector(numEmailSubstrBytes);
+    component beforeLastQuot2 = Selector(numEmailSubstrBytes);
+    beforeLastQuot1.index <== emailValueEndPos - 1;
+    beforeLastQuot2.index <== emailValueEndPos - 2;
+    for (var i = 0; i < numEmailSubstrBytes; i ++) {
+        beforeLastQuot1.in[i] <== emailSubstr[i];
+        beforeLastQuot2.in[i] <== emailSubstr[i];
+    }
+    component beforeLastQuot1Eq = IsEqual();
+    component beforeLastQuot2Eq = IsEqual();
+    beforeLastQuot1Eq.in[0] <== beforeLastQuot1.out;
+    beforeLastQuot1Eq.in[1] <== 0x5c;
+
+    beforeLastQuot2Eq.in[0] <== beforeLastQuot2.out;
+    beforeLastQuot2Eq.in[1] <== 0x5c;
+    beforeLastQuot1Eq.out === 0;
+    beforeLastQuot2Eq.out === 0;
 }
 
-template SpacesBeforeColon(numEmailSubstrBytes) {
+template AreSpaces(numEmailSubstrBytes) {
     signal input in[numEmailSubstrBytes];
-    signal input emailNameStartPos;
-    signal input numSpacesBeforeColon;
+    signal input startPos;
+    signal input numSpaces;
 
     var lengthInBits = 2;
     while(2 ** lengthInBits < numEmailSubstrBytes) {
@@ -83,11 +148,11 @@ template SpacesBeforeColon(numEmailSubstrBytes) {
     component eqs[numEmailSubstrBytes];
     component correct[numEmailSubstrBytes];
     component total = CalculateTotal(numEmailSubstrBytes);
-    //"email"<numSpacesBeforeColon>:  ...
+    //"email"<numSpaces>:  ...
     for (var i = 0; i < numEmailSubstrBytes; i ++) {
         range[i] = IsInRange(lengthInBits);
-        range[i].in[0] <== emailNameStartPos;
-        range[i].in[1] <== emailNameStartPos + 7 + numSpacesBeforeColon;
+        range[i].in[0] <== startPos;
+        range[i].in[1] <== startPos + 7 + numSpaces;
         range[i].index <== i;
 
         eqs[i] = IsEqual();
@@ -100,12 +165,12 @@ template SpacesBeforeColon(numEmailSubstrBytes) {
 
         total.nums[i] <== correct[i].out;
         // byte = in[i]
-        // if byte == 0x20 and i in range(7, 7 + numSpacesBeforeColon):
+        // if byte == 0x20 and i in range(7, 7 + numSpaces):
         //     total += 1
         // else
         //     total += 0
     }
-    total.sum === numSpacesBeforeColon;
+    total.sum === numSpaces;
 }
 
 template EmailName(numEmailSubstrBytes) {

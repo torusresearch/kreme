@@ -26,8 +26,3 @@ template Selector(length) {
     }
     out <== runningTotal[length];
 }
-
-// Same as a Selector, with an additional range check on the index to ensure
-// that it is less than the supported length
-/*template SelectorStrict(length) {*/
-/*}*/

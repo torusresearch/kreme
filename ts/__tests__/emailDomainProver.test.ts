@@ -6,24 +6,26 @@ const stringifyBigInts: (obj: object) => any = ff.utils.stringifyBigInts
 jest.setTimeout(90000)
 
 const circuit = 'emailDomainProver_test'
-const domain = 'company.xyz'
-const plaintext = `{"blah": 123, "email" : "alice@${domain}", "foo": "bar"}`
-const email = `"email" : "alice@${domain}"`
+const domain = '@company.xyz"'
+const plaintext = `{"blah": 123, "email" : "alice${domain}, "foo": "bar"}`
+const email = `"email" : "alice${domain}`
 const NUM_BYTES = 320
 const NUM_EMAIL_SUBSTR_BYTES = 64
 
 const p = strToByteArr(plaintext, NUM_BYTES)
 const domainName = strToByteArr(domain, NUM_EMAIL_SUBSTR_BYTES)
+const numDomainBytes = Buffer.from(domain).length
 const emailSubstr = genSubstrByteArr(
     plaintext,
     email,
     NUM_BYTES,
     NUM_EMAIL_SUBSTR_BYTES,
 )
-const emailValueEndPos = email.length - 1
 const emailNameStartPos = 20
 const numSpacesBeforeColon = 1
 const numSpacesAfterColon = 1
+const emailValueEndPos = emailNameStartPos + 7 + numSpacesBeforeColon + 1 +
+    numSpacesAfterColon + numDomainBytes + 'alice@'.length - 1
 
 describe('JSON field prover for an email domain name', () => {
     it('genSubstrByteArr should work correctly', () => {
@@ -94,6 +96,7 @@ describe('JSON field prover for an email domain name', () => {
             emailValueEndPos,
             numSpacesBeforeColon,
             numSpacesAfterColon,
+            numDomainBytes,
         })
         const witness = await genWitness(circuit, circuitInputs)
         expect(witness.length > 0).toBeTruthy()
