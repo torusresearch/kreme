@@ -7,8 +7,8 @@ jest.setTimeout(90000)
 
 const circuit = 'emailDomainProver_test'
 const domain = 'company.xyz'
-const plaintext = `{"blah": 123, "email": "alice@${domain}", "foo": "bar"}`
-const email = `"email": "alice@${domain}"`
+const plaintext = `{"blah": 123, "email" : "alice@${domain}", "foo": "bar"}`
+const email = `"email" : "alice@${domain}"`
 const NUM_BYTES = 320
 const NUM_EMAIL_SUBSTR_BYTES = 64
 
@@ -21,8 +21,8 @@ const emailSubstr = genSubstrByteArr(
     NUM_EMAIL_SUBSTR_BYTES,
 )
 const emailValueEndPos = email.length - 1
-const emailNameStartPos = 21
-const numSpacesBeforeColon = 0
+const emailNameStartPos = 20
+const numSpacesBeforeColon = 1
 const numSpacesAfterColon = 1
 
 describe('JSON field prover for an email domain name', () => {
@@ -84,6 +84,8 @@ describe('JSON field prover for an email domain name', () => {
     })
 
     it('Should prove the existence of a domain name in the correct position', async () => {
+        expect(emailSubstr[emailNameStartPos].toString()).toEqual(Buffer.from('"')[0].toString())
+        expect(emailSubstr[emailNameStartPos + 6].toString()).toEqual(Buffer.from('"')[0].toString())
         const circuitInputs = stringifyBigInts({
             plaintext: p,
             emailSubstr,

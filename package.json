@@ -13,6 +13,7 @@
         "test-substringMatcher": "jest substringMatcher.test.ts",
         "test-selector": "jest selector.test.ts",
         "test-slicer": "jest slicer.test.ts",
+        "test-range": "jest isInRange.test.ts",
         "test-emailDomainProver": "jest emailDomainProver.test.ts",
         "test-emailDomainProver-debug": "node --inspect-brk ./node_modules/.bin/jest emailDomainProver.test.ts"
     },
