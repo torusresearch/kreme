@@ -11,6 +11,31 @@ const unstringifyBigInts: (obj: object) => any = ff.utils.unstringifyBigInts
 const MAX_PLAINTEXT_BITS = 512
 const CHUNK_LENGTH = 128
 
+const strToSha256PaddedBitArr = (str: string): string => {
+    const buf = Buffer.from(str, 'utf8')
+    const bits: Number[] = buffer2bitArray(buf)
+
+    let result: Number[] = []
+    for (let i = 0; i < bits.length; i ++) {
+        result.push(bits[i])
+    }
+
+    result[bits.length] = 1
+
+    const nBlocks = Math.floor((bits.length + 64) / 512) + 1
+
+    while (result.length < nBlocks * 512 - 64) {
+        result.push(0)
+    }
+
+    let lengthInBits = BigInt(bits.length).toString(2)
+    while (lengthInBits.length < 64) {
+        lengthInBits = '0' + lengthInBits 
+    }
+
+    return result.join('') + lengthInBits
+}
+
 // Convert a string to an array of BigInts where each BigInt represents a byte
 const strToByteArr = (str: string, len: number): BigInt[] => {
     const result: BigInt[] = []
@@ -297,4 +322,6 @@ export {
     plaintext2paddedBitArray,
     genSubstrByteArr,
     strToByteArr,
+    buffer2bitArray,
+    strToSha256PaddedBitArr,
 }
