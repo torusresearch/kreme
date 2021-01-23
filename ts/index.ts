@@ -39,7 +39,7 @@ const strToSha256PaddedBitArr = (str: string): string => {
 // Convert a string to an array of BigInts where each BigInt represents a byte
 const strToByteArr = (str: string, len: number): BigInt[] => {
     const result: BigInt[] = []
-    const buf = Buffer.from(str)
+    const buf = Buffer.from(str, 'utf8')
     assert(len >= buf.length)
 
     for (let i = 0; i < len - buf.length; i ++) {
@@ -323,5 +323,7 @@ export {
     genSubstrByteArr,
     strToByteArr,
     buffer2bitArray,
+    bitArray2buffer,
     strToSha256PaddedBitArr,
+    sha256BufferToHex,
 }
