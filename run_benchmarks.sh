@@ -1,24 +1,31 @@
 #!/usr/bin/env bash
 
-echo "########################################################################"
-echo "Witness generation"
-echo "########################################################################"
-
 npm i
+
+# Compile circuit
+if [ ! -e "./build/test/jwtProver_test.r1cs" ]; then
+    NODE_OPTIONS=--max-old-space-size=4096 node --stack-size=1073741 ./node_modules/circom/cli.js ../circom/benchmark/jwtProver_test.circom -r ./build/test/jwtProver_test.r1cs -c ./build/test/jwtProver_test.c -s ./build/test/jwtProver_test.sym
+fi
+
+# Benchmark witness generation
+echo "########## Witness generation ##########"
 mkdir -p benchmarks
 cd benchmarks
 npx circom-helper -c ../benchmarkConfig.json -nc -b ../build/test/ -p 9001 &
 sleep 5 && npm run test-jwtProver
 
+echo "Running circom-server"
 git clone git@github.com:weijiekoh/circom-server.git
 cd circom-server
 rm -f jwt.witness.json
 git pull origin master
 npm i
 wget -O jwt.witness.json --quiet https://www.dropbox.com/s/5oehw36hywo2jdk/jwt.witness.json?dl=1
+mkdir compiled
 cp ../../build/test/jwtProver_test.* ./compiled/
 rm -f example/mainFiles/*.circom
 
+echo "Running zkutil-server"
 cd ../
 git clone git@github.com:weijiekoh/zkutil-server.git
 cd zkutil-server
