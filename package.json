@@ -30,7 +30,7 @@
         "assert": "^2.0.0",
         "axios": "^0.21.1",
         "circom": "^0.5.33",
-        "circom-helper": "0.0.18",
+        "circom-helper": "0.0.21",
         "circomlib": "^0.3.0",
         "jest": "^26.4.2",
         "maci-crypto": "0.3.2",

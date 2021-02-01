@@ -1,5 +1,6 @@
 jest.setTimeout(90000)
 import * as assert from 'assert'
+import * as fs from 'fs'
 import { 
     sha256BufferToHex,
     strToSha256PaddedBitArr,
@@ -83,7 +84,13 @@ describe('JWTProver circuit', () => {
                 BigInt('0x' + expectedHashBuf.slice(16, 32).toString('hex')),
             ],
         })
+        const start = Date.now()
         const witness = await genWitness(circuit, circuitInputs)
+        const end = Date.now()
+        const duration = (end - start) / 1000
+        console.log('Witness generation took', duration, 'seconds')
         expect(witness.length > 0).toBeTruthy()
+
+        fs.writeFileSync('jwt.witness.json', witness)
     })
 })
