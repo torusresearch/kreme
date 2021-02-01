@@ -4,9 +4,9 @@ echo "########################################################################"
 echo "Witness generation"
 echo "########################################################################"
 
+npm i
 mkdir -p benchmarks
 cd benchmarks
-#npm i
 npx circom-helper -c ../benchmarkConfig.json -nc -b ../build/test/ -p 9001 &
 sleep 5 && npm run test-jwtProver
 
