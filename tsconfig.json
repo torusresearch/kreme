@@ -6,13 +6,12 @@
         "noImplicitAny": false,
         "forceConsistentCasingInFileNames": true,
         "noUnusedLocals": false,
-        "noUnusedParameters": true,
+        "noUnusedParameters": false,
         "noImplicitReturns": true,
         "noFallthroughCasesInSwitch": true,
         "sourceMap": true,
         "strict": true,
-        "outDir": "./build",
-        "lib": [ "es2015", "dom" ]
+        "outDir": "./build"
     },
     "exclude": [
         "node_modules/**"

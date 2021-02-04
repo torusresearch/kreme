@@ -1,0 +1,36 @@
+{
+    "circomRuntimePath": "../circuits/node_modules/circom_runtime",
+    "ffiasmPath": "../circuits/node_modules/ffiasm",
+    "circuits": [
+        {
+            "template": "../circuits/circom/jwtProver.circom",
+            "component": "JwtProver",
+            "params": [64, 64]
+        },
+        {
+            "template": "../circuits/circom/jwtProver.circom",
+            "component": "JwtProver",
+            "params": [128, 64]
+        },
+        {
+            "template": "../circuits/circom/jwtProver.circom",
+            "component": "JwtProver",
+            "params": [192, 64]
+        },
+        {
+            "template": "../circuits/circom/jwtProver.circom",
+            "component": "JwtProver",
+            "params": [256, 64]
+        },
+        {
+            "template": "../circuits/circom/jwtProver.circom",
+            "component": "JwtProver",
+            "params": [320, 64]
+        },
+        {
+            "template": "../circuits/circom/jwtProver.circom",
+            "component": "JwtProver",
+            "params": [384, 64]
+        }
+    ]
+}

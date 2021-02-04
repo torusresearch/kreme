@@ -1,0 +1,42 @@
+{
+    "name": "kreme-circuits",
+    "version": "0.0.1",
+    "description": "",
+    "main": "build/index.js",
+    "scripts": {
+        "circom-helper": "circom-helper -c ./circomHelperConfig.json -nc -b ./build/test/ -p 9001",
+        "watch": "tsc --watch",
+        "build": "tsc",
+        "test": "jest",
+        "test-sha256Hasher": "jest sha256Hasher.test.ts",
+        "test-sha256Hasher-debug": "node --inspect-brk ./node_modules/.bin/jest sha256Hasher.test.ts",
+        "test-jwtProver": "jest jwtProver.test.ts",
+        "test-jwtProver-debug": "node --inspect-brk ./node_modules/.bin/jest jwtProver.test.ts",
+        "test-matcher": "jest matcher.test.ts",
+        "test-substringMatcher": "jest substringMatcher.test.ts",
+        "test-selector": "jest selector.test.ts",
+        "test-slicer": "jest slicer.test.ts",
+        "test-range": "jest isInRange.test.ts",
+        "test-endsWith": "jest endsWith.test.ts",
+        "test-stringUtils": "jest strUtils.test.ts",
+        "test-stringUtils-debug": "node --inspect-brk ./node_modules/.bin/jest strUtils.test.ts",
+        "test-emailDomainProver": "jest emailDomainProver.test.ts",
+        "test-emailDomainProver-debug": "node --inspect-brk ./node_modules/.bin/jest emailDomainProver.test.ts"
+    },
+    "author": "Koh Wei Jie",
+    "license": "Copyright",
+    "dependencies": {
+        "@types/jest": "^26.0.14",
+        "@types/node": "^14.11.2",
+        "assert": "^2.0.0",
+        "axios": "^0.21.1",
+        "circom": "^0.5.38",
+        "circom-helper": "0.0.22",
+        "circomlib": "^0.4.1",
+        "jest": "^26.4.2",
+        "shelljs": "^0.8.4",
+        "snarkjs": "0.3.57",
+        "ts-jest": "^26.4.1",
+        "typescript": "^4.0.3"
+    }
+}
