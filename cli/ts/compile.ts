@@ -41,7 +41,10 @@ const configureSubparsers = (subparsers: ArgumentParser) => {
             help: 'Skip compilation if compiled files exist',
         }
     )
+}
 
+const genCircuitFilePrefix = (component: string, params: number[]) => {
+    return `${component}-${params.join('_')}`
 }
 
 const compile = async (config: any, outDir: string, noClobber: boolean) => {
@@ -55,7 +58,7 @@ const compile = async (config: any, outDir: string, noClobber: boolean) => {
         const circuitSrc = `include "${template}"; ` +
             `component main = ${c.component}(${c.params.join(', ')});`
 
-        const filename = `${c.component}-${c.params.join('_')}.circom`
+        const filename = `${genCircuitFilePrefix(c.component, c.params)}.circom`
         const filepath = path.join(outDir, filename)
         fs.writeFileSync(filepath, circuitSrc)
 

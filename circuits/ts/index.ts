@@ -65,18 +65,6 @@ const copyWitnessGenSrcs = (
     )
     cmd = `nasm -felf64 ${frAsmPath}`
     out = exec(cmd)
-
-    const srcs = 
-        path.join(path.resolve(buildDir), 'main.cpp') + ' ' +
-        path.join(path.resolve(buildDir), 'calcwit.cpp') + ' ' +
-        path.join(path.resolve(buildDir), 'utils.cpp') + ' ' +
-        path.join(path.resolve(buildDir), 'fr.cpp') + ' ' +
-        path.join(path.resolve(buildDir), 'fr.o')
-
-    cmd = `g++ -pthread ${srcs} ` +
-        `${cFile} -o ${witnessGenFile} ` + 
-        `-lgmp -std=c++11 -O3 -fopenmp -DSANITY_CHECK`
-    out = exec(cmd)
 }
 
 /*
@@ -124,7 +112,7 @@ const compile = (
     )
 
     console.log('Compiling', filepath)
-    const cmd = `${NODE_CMD} ` +
+    let cmd = `${NODE_CMD} ` +
         `${pathToCircom} ${filepath} ` +
         `-r ${r1csFile} ` +
         `-c ${cFile} ` +
@@ -132,13 +120,28 @@ const compile = (
         `-t ${watFile} ` +
         `-s ${symFile} `
 
-    const out = exec(cmd)
+    let out = exec(cmd)
+
+    const srcs = 
+        path.join(path.resolve(buildDir), 'main.cpp') + ' ' +
+        path.join(path.resolve(buildDir), 'calcwit.cpp') + ' ' +
+        path.join(path.resolve(buildDir), 'utils.cpp') + ' ' +
+        path.join(path.resolve(buildDir), 'fr.cpp') + ' ' +
+        path.join(path.resolve(buildDir), 'fr.o')
+
+    cmd = `g++ -pthread ${srcs} ` +
+        `${cFile} -o ${witnessGenFile} ` + 
+        `-lgmp -std=c++11 -O3 -fopenmp -DSANITY_CHECK`
+    out = exec(cmd)
 
     return out
 }
 
 const NODE_CMD = 'NODE_OPTIONS=--max-old-space-size=16384 node --stack-size=1048576'
 
+/*
+ * Generate a .zkey file from the .r1cs and .ptau files provided
+ */
 const genZkey = (
     r1csFile: string,
     ptauFile: string,
@@ -159,7 +162,8 @@ const genZkey = (
         'cli.cjs',
     )
     const cmd = `${NODE_CMD} ${pathToSnarkjs} zkey new ${r1csFile} ${ptauFile} ${outFile}`
-    console.log(cmd)
+    console.log('Generating', outFile)
+    exec(cmd)
 }
 
 /*

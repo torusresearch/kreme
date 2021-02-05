@@ -21,13 +21,16 @@
         "test-stringUtils": "jest strUtils.test.ts",
         "test-stringUtils-debug": "node --inspect-brk ./node_modules/.bin/jest strUtils.test.ts",
         "test-emailDomainProver": "jest emailDomainProver.test.ts",
-        "test-emailDomainProver-debug": "node --inspect-brk ./node_modules/.bin/jest emailDomainProver.test.ts"
+        "test-emailDomainProver-debug": "node --inspect-brk ./node_modules/.bin/jest emailDomainProver.test.ts",
+        "test-base64url": "jest base64url.test.ts",
+        "test-base64url-debug": "node --inspect-brk ./node_modules/.bin/jest base64url.test.ts"
     },
     "author": "Koh Wei Jie",
     "license": "Copyright",
     "dependencies": {
         "@types/jest": "^26.0.14",
         "@types/node": "^14.11.2",
+        "base64url": "^3.0.1",
         "assert": "^2.0.0",
         "axios": "^0.21.1",
         "circom": "^0.5.38",

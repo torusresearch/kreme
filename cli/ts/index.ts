@@ -15,6 +15,11 @@ import {
     configureSubparsers as configureSubparsersForGenZkeys,
 } from './genZkeys'
 
+import {
+    prove,
+    configureSubparsers as configureSubparsersForProve,
+} from './prove'
+
 const main = async () => {
     const parser = new argparse.ArgumentParser({ 
         description: 'Kreme - ZKP proof on JWTs'
@@ -29,6 +34,7 @@ const main = async () => {
     configureSubparsersForCompile(subparsers)
     configureSubparsersForDownloadPhase1(subparsers)
     configureSubparsersForGenZkeys(subparsers)
+    configureSubparsersForProve(subparsers)
 
     const args = parser.parse_args()
     
@@ -49,6 +55,8 @@ const main = async () => {
         return (await downloadPhase1(args.output, args.no_clobber))
     } else if (args.subcommand === 'genZkeys') {
         return (await genZkeys(args.ptau, args.r1cs, args.output, args.no_clobber))
+    } else if (args.subcommand === 'prove') {
+        return (await prove(args.jwt, args.output))
     }
 }
 
