@@ -5,6 +5,7 @@ module.exports = {
     },
     testPathIgnorePatterns: [
         "<rootDir>/build/",
+        "<rootDir>/benchmarks/",
         "<rootDir>/node_modules/",
     ],
     testRegex: '/__tests__/.*\\.test\\.ts$',
