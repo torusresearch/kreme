@@ -1,4 +1,5 @@
 jest.setTimeout(90000)
+import { sha256ToBigInt } from 'kreme-crypto'
 import * as crypto from 'crypto'
 import { genWitness, getSignalByName } from './utils'
 import { strToSha256PaddedBitArr, buffer2bitArray, genSubstrByteArr, strToByteArr } from '../'
@@ -50,9 +51,7 @@ describe('SHA256', () => {
             }
         
             const resultHex = BigInt('0b' + result).toString(16)
-            const hash = crypto.createHash("sha256")
-                .update(Buffer.from(plaintext, "utf8"))
-                .digest("hex");
+            const hash = sha256ToBigInt(plaintext).toString(16)
             expect(resultHex).toEqual(hash)
         })
     })

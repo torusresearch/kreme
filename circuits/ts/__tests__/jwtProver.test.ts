@@ -15,6 +15,9 @@ import * as crypto from 'crypto'
 import { genWitness, getSignalByName } from './utils'
 const ff = require('ffjavascript')
 const stringifyBigInts: (obj: object) => any = ff.utils.stringifyBigInts
+import {
+    sha256ToFieldElements,
+} from 'kreme-crypto'
 
 const circuit = 'jwtProver_test'
 const NUM_BYTES = 320
@@ -23,11 +26,7 @@ const domain = '@company.xyz"'
 const email = `"email" : "alice${domain}`
 
 const testCircuit = async (plaintext: string) => {
-    const b = Buffer.from(plaintext, 'utf8')
-    const expectedHash = crypto.createHash('sha256')
-        .update(b)
-        .digest('hex')
-    const expectedHashBuf = Buffer.from(expectedHash, 'hex')
+    const expectedHash = sha256ToFieldElements(plaintext)
 
     // Pads the plaintext using RFC4634, section 4.1
     const p = strToPaddedBytes(plaintext)
@@ -67,10 +66,7 @@ const testCircuit = async (plaintext: string) => {
         numSpacesBeforeColon,
         numSpacesAfterColon,
         numDomainBytes,
-        expectedHash: [
-            BigInt('0x' + expectedHashBuf.slice(0, 16).toString('hex')),
-            BigInt('0x' + expectedHashBuf.slice(16, 32).toString('hex')),
-        ],
+        expectedHash,
     })
 
     const start = Date.now()

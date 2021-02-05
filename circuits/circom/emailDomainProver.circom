@@ -201,6 +201,7 @@ template EmailName(numEmailSubstrBytes) {
     selectorL.index <== emailNameStartPos + 5;
     selectorQ1.index <== emailNameStartPos + 6;
 
+    // "email"
     selectorQ0.out === 0x22;
     selectorE.out === 0x65;
     selectorM.out === 0x6d;

@@ -1,6 +1,7 @@
 {
   "packages": [
     "cli",
+    "crypto",
     "circuits"
   ],
   "version": "0.0.1",

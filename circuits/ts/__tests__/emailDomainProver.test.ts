@@ -34,15 +34,15 @@ describe('JSON field prover for an email domain name', () => {
 
         console.log(
             'plaintext:', byteArrAsHex(p), '\n',
-            'emailSubstr:', byteArrAsHex(emailSubstr), '\n',
+            'emailSubstr:', byteArrAsHex(emailSubstr.byteArr), '\n',
             'domainName:', byteArrAsHex(domainName),
         )
 
-        expect(emailSubstr[emailNameStartPos].toString()).toEqual(Buffer.from('"')[0].toString())
-        expect(emailSubstr[emailNameStartPos + 6].toString()).toEqual(Buffer.from('"')[0].toString())
+        expect(emailSubstr.byteArr[emailNameStartPos].toString()).toEqual(Buffer.from('"')[0].toString())
+        expect(emailSubstr.byteArr[emailNameStartPos + 6].toString()).toEqual(Buffer.from('"')[0].toString())
         const circuitInputs = stringifyBigInts({
             plaintext: p,
-            emailSubstr,
+            emailSubstr: emailSubstr.byteArr,
             domainName,
             emailNameStartPos,
             emailValueEndPos,
@@ -78,15 +78,15 @@ describe('JSON field prover for an email domain name', () => {
 
         console.log(
             'plaintext:', byteArrAsHex(p), '\n',
-            'emailSubstr:', byteArrAsHex(emailSubstr), '\n',
+            'emailSubstr:', byteArrAsHex(emailSubstr.byteArr), '\n',
             'domainName:', byteArrAsHex(domainName),
         )
 
-        expect(emailSubstr[emailNameStartPos].toString()).toEqual(Buffer.from('"')[0].toString())
-        expect(emailSubstr[emailNameStartPos + 6].toString()).toEqual(Buffer.from('"')[0].toString())
+        expect(emailSubstr.byteArr[emailNameStartPos].toString()).toEqual(Buffer.from('"')[0].toString())
+        expect(emailSubstr.byteArr[emailNameStartPos + 6].toString()).toEqual(Buffer.from('"')[0].toString())
         const circuitInputs = stringifyBigInts({
             plaintext: p,
-            emailSubstr,
+            emailSubstr: emailSubstr.byteArr,
             domainName,
             emailNameStartPos,
             emailValueEndPos,

@@ -393,42 +393,14 @@ const bitArray2buffer = (a): Buffer => {
     return b
 }
 
-const compileAndLoadCircuit = async (
-    circuitPath: string
-) => {
+//const getSignalByName = (
+    //circuit: any,
+    //witness: any,
+    //signal: string,
+//) => {
 
-    const circuit = await circom.tester(
-        path.join(
-            __dirname,
-            `../circom/${circuitPath}`,
-        ),
-    )
-
-    await circuit.loadSymbols()
-
-    return circuit
-}
-
-const executeCircuit = async (
-    circuit: any,
-    inputs: any,
-) => {
-
-    const witness = await circuit.calculateWitness(inputs, true)
-    await circuit.checkConstraints(witness)
-    await circuit.loadSymbols()
-
-    return witness
-}
-
-const getSignalByName = (
-    circuit: any,
-    witness: any,
-    signal: string,
-) => {
-
-    return witness[circuit.symbols[signal].varIdx]
-}
+    //return witness[circuit.symbols[signal].varIdx]
+//}
 
 const sha256BufferToHex = (b: Buffer) => {
     return crypto.createHash("sha256")

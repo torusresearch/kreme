@@ -32,6 +32,7 @@
         "@types/node": "^14.11.2",
         "base64url": "^3.0.1",
         "assert": "^2.0.0",
+        "kreme-crypto": "^0.0.1",
         "axios": "^0.21.1",
         "circom": "^0.5.38",
         "circom-helper": "0.0.22",
