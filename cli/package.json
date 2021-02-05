@@ -9,7 +9,7 @@
         "test": "jest",
         "compile-example": "node build/index.js compile -c compile_config.example.json -o build/prodCircuits/ -nc",
         "compile-example-debug": "node --inspect-brk build/index.js compile -c compile_config.example.json -o build/prodCircuits/ -nc",
-        "downloadPhase1": "node build/index.js downloadPhase1 -o ./build/prodCircuits/powersOfTau28_hez_final_20.ptau",
+        "downloadPhase1": "node build/index.js downloadPhase1 -o ./build/prodCircuits/powersOfTau28_hez_final_20.ptau -nc",
         "genZkeys": "node build/index.js genZkeys -r ./build/prodCircuits/ -p ./build/prodCircuits/powersOfTau28_hez_final_20.ptau -o ./build/prodCircuits/ -nc",
         "genZkeys-debug": "node --inspect-brk build/index.js genZkeys -r ./build/prodCircuits/ -p ./build/prodCircuits/powersOfTau28_hez_final_20.ptau -o ./build/prodCircuits/ -nc"
     },

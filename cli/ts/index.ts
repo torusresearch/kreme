@@ -44,11 +44,11 @@ const main = async () => {
     if (args.subcommand === 'compile') {
         const config = loadConfig(args.config)
         const outDir = args.output 
-        await compile(config, outDir, args.no_clobber)
+        return (await compile(config, outDir, args.no_clobber))
     } else if (args.subcommand === 'downloadPhase1') {
-        await downloadPhase1(args.output, args.no_clobber)
+        return (await downloadPhase1(args.output, args.no_clobber))
     } else if (args.subcommand === 'genZkeys') {
-        await genZkeys(args.ptau, args.r1cs, args.output, args.no_clobber)
+        return (await genZkeys(args.ptau, args.r1cs, args.output, args.no_clobber))
     }
 }
 

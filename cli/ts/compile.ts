@@ -68,9 +68,11 @@ const compile = async (config: any, outDir: string, noClobber: boolean) => {
             )
         } catch (e) {
             console.error(`Error: could not compile ${filename}\n${e.message}`)
-            break
+            return 1
         }
     }
+
+    return 0
 }
 
 export { compile, configureSubparsers }

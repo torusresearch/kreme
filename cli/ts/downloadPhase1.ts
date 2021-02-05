@@ -31,18 +31,44 @@ const configureSubparsers = (subparsers: ArgumentParser) => {
     )
 }
 
-const URL = 'https://www.dropbox.com/sh/3dbajm52sch9b0k/AACVzdvBdvxuBtOobA4-5S_Ra?dl=1'
-const SIZE = '1.2G'
+const URL = 'https://www.dropbox.com/s/02xi5ygo59o33oh/powersOfTau28_hez_final_20.ptau?dl=1'
+const SIZE = '1.13G'
 
 const downloadPhase1 = async (filepath: string, noClobber: boolean) => {
-    if (fs.existsSync(filepath) && noClobber) {
-        console.log(`${filepath} exists. Skipping.`)
-        return
+    const checksumFile = path.join(
+        __dirname,
+        '..',
+        'ptau.checksum',
+    )
+
+    const verify = () => {
+        const checksumCmd = `b2sum -c ${checksumFile}`
+        const out = shelljs.exec(checksumCmd)
+        if (out.code !== 0) {
+            console.error('Error: invalid .ptau file')
+            return 1
+        }
+        return 0
     }
 
-    const cmd = `wget --progress=bar:force:noscroll -O ${filepath} ${URL}`
-    console.log(`Downloading the phase 1 file from ${URL} (${SIZE})`)
-    shelljs.exec(cmd)
+    const exists = fs.existsSync(filepath)
+    if (exists && verify() === 1) {
+        return 1
+    }
+
+    if (exists && noClobber) {
+        console.log(`${filepath} exists. Skipping.`)
+        return 0
+    } else {
+        const cmd = `wget --progress=bar:force:noscroll -O ${filepath} ${URL}`
+        console.log(`Downloading the phase 1 file from ${URL} (${SIZE})`)
+        shelljs.exec(cmd)
+
+        if (verify() === 1) {
+            return 1
+        }
+    }
+    return 0
 }
 
 export { downloadPhase1, configureSubparsers }
