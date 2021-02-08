@@ -3,6 +3,7 @@ import * as assert from 'assert'
 import base64url from 'base64url'
 import * as fs from 'fs'
 import { 
+    genJwtProverCircuitInputs,
     jwtBytesToBits,
     sha256BufferToHex,
     buffer2bitArray,
@@ -34,60 +35,7 @@ const domain = '@company.xyz"'
 const email = `"email" :  "alice${domain}`
 
 const testCircuit = async (headerAndPayload: string) => {
-    // The SHA256 algorithm pads the input to have a length of a multiple of 64
-    // bytes.
-    assert(NUM_PREIMAGE_B64_BYTES % 64 === 0)
-    const preimagePaddedBytes = strToPaddedBytes(headerAndPayload)
-    assert(preimagePaddedBytes.length === NUM_PREIMAGE_B64_BYTES)
-
-    const emailAsBits = buffer2bitArray(Buffer.from(email))
-    const emailAsBitStr = emailAsBits.join('')
-
-    let emailSubstrB64StartIndex
-    let emailSubstrB64
-    
-    for (var i = 0; i < NUM_PREIMAGE_B64_BYTES; i ++) {
-        const substr = preimagePaddedBytes.slice(i, i + NUM_EMAIL_SUBSTR_B64_BYTES)
-        const substrBits = jwtBytesToBits(substr)
-        if (substrBits.join('').indexOf(emailAsBitStr) > -1) {
-            emailSubstrB64 = substr
-            emailSubstrB64StartIndex = i
-            break
-        }
-    }
-
-    const emailSubstrBits = jwtBytesToBits(emailSubstrB64)
-    const emailSubstrBitIndex = emailSubstrBits.join('').indexOf(emailAsBitStr)
-
-    const emailSubstrUtf8 = strToByteArr(email, NUM_EMAIL_SUBSTR_B64_BYTES * 6 / 8)
-
-    const expectedHash = sha256ToFieldElements(headerAndPayload)
-    const domainName = strToByteArr(domain, NUM_EMAIL_SUBSTR_B64_BYTES * 6 / 8)
-    const numDomainBytes = Buffer.from(domain).length
-    const regex = /\"email\"(\s*):(\s*)\".+\"$/
-    const m = email.match(regex)
-    if (m == null) {
-        throw new Error('Invalid email address')
-    }
-    const numSpacesBeforeColon = m[1].length
-    const numSpacesAfterColon = m[2].length
-
-    const emailNameStartPos = emailSubstrUtf8.length - Buffer.from(email).length
-    const emailValueEndPos = emailNameStartPos + Buffer.from(email).length - 1
-
-    const circuitInputs = stringifyBigInts({
-        preimageB64: preimagePaddedBytes,
-        emailSubstrB64,
-        emailSubstrBitIndex,
-        emailSubstrBitLength: emailAsBitStr.length,
-        domainName,
-        numDomainBytes,
-        emailNameStartPos,
-        emailValueEndPos,
-        numSpacesBeforeColon,
-        numSpacesAfterColon,
-        expectedHash,
-    })
+    const circuitInputs = genJwtProverCircuitInputs(headerAndPayload, domain)
 
     const start = Date.now()
     const witness = await genWitness(circuit, circuitInputs)

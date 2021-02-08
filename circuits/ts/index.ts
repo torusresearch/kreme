@@ -8,6 +8,83 @@ import { base64urlChars } from './base64url'
 const ff = require('ffjavascript')
 const stringifyBigInts: (obj: object) => any = ff.utils.stringifyBigInts
 const unstringifyBigInts: (obj: object) => any = ff.utils.unstringifyBigInts
+import base64url from 'base64url'
+import { sha256ToFieldElements } from 'kreme-crypto'
+const SUPPORTED_EMAIL_B64_LENGTHS = [48, 88]
+
+const genJwtProverCircuitInputs = (headerAndPayload: string, domain: string) => {
+    const preimagePaddedBytes = strToPaddedBytes(headerAndPayload)
+    const NUM_PREIMAGE_B64_BYTES = preimagePaddedBytes.length
+    const s = headerAndPayload.split('.')
+    const payload = base64url.decode(s[1])
+    const addr = JSON.parse(payload).email
+    const startIndex = payload.indexOf('"email"')
+    const endIndex = payload.indexOf(addr) + addr.length + 1
+    const email = payload.slice(startIndex, endIndex)
+
+    let utf8Len
+    for (const len of SUPPORTED_EMAIL_B64_LENGTHS) {
+        utf8Len = len * 6 / 8
+        if (utf8Len >= Buffer.from(email).length) {
+            break
+        }
+    }
+    if (utf8Len == undefined) {
+        throw new Error('Unsupported email length')
+    }
+
+    const NUM_EMAIL_SUBSTR_B64_BYTES = utf8Len * 8 / 6
+
+    const emailAsBits = buffer2bitArray(Buffer.from(email))
+    const emailAsBitStr = emailAsBits.join('')
+
+    let emailSubstrB64StartIndex
+    let emailSubstrB64
+    
+    for (var i = 0; i < NUM_PREIMAGE_B64_BYTES; i ++) {
+        const substr = preimagePaddedBytes.slice(i, i + NUM_EMAIL_SUBSTR_B64_BYTES)
+        const substrBits = jwtBytesToBits(substr)
+        if (substrBits.join('').indexOf(emailAsBitStr) > -1) {
+            emailSubstrB64 = substr
+            emailSubstrB64StartIndex = i
+            break
+        }
+    }
+
+    const emailSubstrBits = jwtBytesToBits(emailSubstrB64)
+    const emailSubstrBitIndex = emailSubstrBits.join('').indexOf(emailAsBitStr)
+
+    const emailSubstrUtf8 = strToByteArr(email, NUM_EMAIL_SUBSTR_B64_BYTES * 6 / 8)
+
+    const expectedHash = sha256ToFieldElements(headerAndPayload)
+    const domainName = strToByteArr(domain, NUM_EMAIL_SUBSTR_B64_BYTES * 6 / 8)
+    const numDomainBytes = Buffer.from(domain).length
+    const regex = /\"email\"(\s*):(\s*)\".+\"$/
+    const m = email.match(regex)
+    if (m == null) {
+        throw new Error('Invalid email address')
+    }
+    const numSpacesBeforeColon = m[1].length
+    const numSpacesAfterColon = m[2].length
+
+    const emailNameStartPos = emailSubstrUtf8.length - Buffer.from(email).length
+    const emailValueEndPos = emailNameStartPos + Buffer.from(email).length - 1
+
+    const circuitInputs = stringifyBigInts({
+        preimageB64: preimagePaddedBytes,
+        emailSubstrB64,
+        emailSubstrBitIndex,
+        emailSubstrBitLength: emailAsBitStr.length,
+        domainName,
+        numDomainBytes,
+        emailNameStartPos,
+        emailValueEndPos,
+        numSpacesBeforeColon,
+        numSpacesAfterColon,
+        expectedHash,
+    })
+    return circuitInputs
+}
 
 // Slightly modified base64url algorithm. The . character is converted to
 // 000000 in binary.
@@ -424,15 +501,6 @@ const bitArray2buffer = (a): Buffer => {
     return b
 }
 
-//const getSignalByName = (
-    //circuit: any,
-    //witness: any,
-    //signal: string,
-//) => {
-
-    //return witness[circuit.symbols[signal].varIdx]
-//}
-
 const sha256BufferToHex = (b: Buffer) => {
     return crypto.createHash("sha256")
         .update(b)
@@ -464,4 +532,5 @@ export {
     numArrToBuf,
     compile,
     genZkey,
+    genJwtProverCircuitInputs,
 }
