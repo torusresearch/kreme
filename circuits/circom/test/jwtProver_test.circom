@@ -1,3 +1,3 @@
 include "../jwtProver.circom"; 
 
-component main = JwtProver(320, 64);
+component main = JwtProver(256, 48);

@@ -1,10 +1,11 @@
-include "../node_modules/circomlib/circuits/mux1.circom";
-include "../node_modules/circomlib/circuits/bitify.circom";
 include "../node_modules/circomlib/circuits/comparators.circom";
 
 /*
  * Given an input field element, which should be within the base64url character
- * set, return its 6-bit representation
+ * set, return its 6-bit representation.
+ * Warning: if the input value is not a valid base64url encoding, the output
+ * will be [0, 0, 0, 0, 0, 0], which is the same result as having the input
+ * value 0x41 or 'A'.
  */
 template Base64Decoder() {
     signal input in;
@@ -42,8 +43,6 @@ template Base64Decoder() {
     ];
 
     component eq[64];
-    /*component mux[64];*/
-    /*component n2b[64];*/
     signal results[65][6];
 
     for (var i = 0; i < 6; i++) {

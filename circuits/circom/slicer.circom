@@ -22,8 +22,8 @@ template Slicer(length) {
     lenCheck.in[1] <== length;
     lenCheck.out === 1;
 
-    // Ensure that startIndex + len < length
-    component indexCheck = LessThan(lengthInBits);
+    // Ensure that startIndex + len <= length
+    component indexCheck = LessEqThan(lengthInBits);
     indexCheck.in[0] <== startIndex + len;
     indexCheck.in[1] <== length;
     indexCheck.out === 1;

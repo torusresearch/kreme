@@ -4,9 +4,42 @@ import * as path from 'path'
 import * as fs from 'fs'
 import * as shelljs from 'shelljs'
 import * as circom from 'circom'
+import { base64urlChars } from './base64url'
 const ff = require('ffjavascript')
 const stringifyBigInts: (obj: object) => any = ff.utils.stringifyBigInts
 const unstringifyBigInts: (obj: object) => any = ff.utils.unstringifyBigInts
+
+// Slightly modified base64url algorithm. The . character is converted to
+// 000000 in binary.
+const jwtBytesToBits = (jwtBytes: number[]): number[] => {
+    const values: number[] = []
+    for (const j of jwtBytes) {
+        const c = Buffer.from(j.toString(16), 'hex').toString()
+        const r = base64urlChars[c]
+
+        if (j === 0x2e || j === 0) { // the dot character or 0
+            values.push(0)
+        } else if (r == undefined) {
+            values.push(0)
+        } else {
+            values.push(r)
+        }
+    }
+
+    const bits: number[] = []
+
+    for (const v of values) {
+        let b = v.toString(2)
+        while (b.length < 6) {
+            b = '0' + b
+        }
+        for (let i = 0; i < 6; i ++) {
+            bits.push(Number(b[i]))
+        }
+    }
+
+    return bits
+}
 
 const replaceExt = (fp: string, ext: string, originalExt: string) => {
     return path.join(
@@ -295,7 +328,6 @@ const genSubstrByteArr = (
     numPlaintextBytes: number,
     numSubstrBytes: number,
 ): { byteArr: number[], pos: number } => {
-
     // substr must indeed be a substring of plaintext
     const substrIndex = plaintext.indexOf(substr)
     assert(plaintext.indexOf(substr) > -1)
@@ -347,7 +379,6 @@ const genSubstrByteArr = (
 
     const diff = numPlaintextBytes - Buffer.from(plaintext).length
     let pos = 0
-    debugger
     while (pos < numPlaintextBytes - numSubstrBytes) {
         if (p.slice(pos, pos + numSubstrBytes) === result) {
             break
@@ -421,6 +452,7 @@ const plaintext2paddedBitArray = (plaintext: string, chunkLength: number) => {
 }
 
 export {
+    jwtBytesToBits,
     plaintext2paddedBitArray,
     genSubstrByteArr,
     strToByteArr,

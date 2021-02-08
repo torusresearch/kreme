@@ -19,10 +19,11 @@ template SubstringMatcher(lengthA, lengthB) {
     signal input b[lengthB];
     signal output out;
 
-    component lenCheck = LessEqThan(32);
-    lenCheck.in[0] <== lengthB;
-    lenCheck.in[1] <== lengthA;
-    lenCheck.out === 1;
+    assert(lengthB <= lengthA);
+    /*component lenCheck = LessEqThan(32);*/
+    /*lenCheck.in[0] <== lengthB;*/
+    /*lenCheck.in[1] <== lengthA;*/
+    /*lenCheck.out === 1;*/
 
     var c = lengthA - lengthB + 1;
 

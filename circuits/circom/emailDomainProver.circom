@@ -8,18 +8,15 @@ include "./endsWith.circom";
 
 // Proves the presence of a domain name in the `email` field of a secret JSON
 // string.
-template EmailDomainProver(numBytes, numEmailSubstrBytes) {
+template EmailDomainProver(numBytes) {
     var numBytesInBits = 2;
     while(2 ** numBytesInBits < numBytes) {
         numBytesInBits ++;
     }
-    // numBytes is the maximum supported number of bytes of the plaintext.
+    // An array of bytes which represents the email substring
+    signal private input emailSubstr[numBytes];
 
-    // An array of bytes which represents the plaintext
-    signal private input plaintext[numBytes];
-    signal private input emailSubstr[numEmailSubstrBytes];
-
-    signal input domainName[numEmailSubstrBytes];
+    signal input domainName[numBytes];
     signal input numDomainBytes;
 
     signal private input emailNameStartPos;
@@ -40,86 +37,74 @@ template EmailDomainProver(numBytes, numEmailSubstrBytes) {
     posChecker.out === 1;
 
     // ------------------------------------------------------------------------
-    // 2. Check that `emailSubstr` is a substring of `plaintext`
-    component substrChecker = SubstringMatcher(numBytes, numEmailSubstrBytes);
-    for (var i = 0; i < numBytes; i ++) {
-        substrChecker.a[i] <== plaintext[i];
-    }
-
-    for (var i = 0; i < numEmailSubstrBytes; i ++) {
-        substrChecker.b[i] <== emailSubstr[i];
-    }
-    substrChecker.out === 1;
-
-    // ------------------------------------------------------------------------
-    // 3. Check that the 7 bytes starting from emailSubstr[0]
+    // 2. Check that the 7 bytes starting from emailSubstr[emailNameStartPos]
     // match the UTF-8 representation of `"email"`
-    component emailName = EmailName(numEmailSubstrBytes);
+    component emailName = EmailName(numBytes);
     emailName.emailNameStartPos <== emailNameStartPos;
-    for (var i = 0; i < numEmailSubstrBytes; i ++) {
+    for (var i = 0; i < numBytes; i ++) {
         emailName.in[i] <== emailSubstr[i];
     }
 
-    // 4. Check that there are numSpacesBeforeColon spaces starting from index
+    // 3. Check that there are numSpacesBeforeColon spaces starting from index
     // emailNameStartPos + 7
-    component spacesBeforeColon = AreSpaces(numEmailSubstrBytes);
+    component spacesBeforeColon = AreSpaces(numBytes);
     spacesBeforeColon.startPos <== emailNameStartPos;
     spacesBeforeColon.numSpaces <== numSpacesBeforeColon;
-    for (var i = 0; i < numEmailSubstrBytes; i ++) {
+    for (var i = 0; i < numBytes; i ++) {
         spacesBeforeColon.in[i] <== emailSubstr[i];
     }
 
-    // 5. Check that there is a colon at index emailNameStartPos + 6 +
+    // 4. Check that there is a colon at index emailNameStartPos + 6 +
     // numSpacesBeforeColon
     //"email"<numSpacesBeforeColon>:  ...
-    component selectColon = Selector(numEmailSubstrBytes);
+    component selectColon = Selector(numBytes);
     selectColon.index <== emailNameStartPos + 7 + numSpacesBeforeColon;
-    for (var i = 0; i < numEmailSubstrBytes; i ++) {
+    for (var i = 0; i < numBytes; i ++) {
         selectColon.in[i] <== emailSubstr[i];
     }
     selectColon.out === 0x3a;
 
-    // 6. Check that there are numSpacesAfterColon spaces starting from index
+    // 5. Check that there are numSpacesAfterColon spaces starting from index
     // emailNameStartPos + 7 + numSpacesBeforeColon + 1
-    component spacesAfterColon = AreSpaces(numEmailSubstrBytes);
+    component spacesAfterColon = AreSpaces(numBytes);
     spacesAfterColon.startPos <== emailNameStartPos + 7 + numSpacesBeforeColon + 1;
     spacesAfterColon.numSpaces <== numSpacesAfterColon;
-    for (var i = 0; i < numEmailSubstrBytes; i ++) {
+    for (var i = 0; i < numBytes; i ++) {
         spacesAfterColon.in[i] <== emailSubstr[i];
     }
 
-    // 7. Check that the byte at emailValueEndPos matches
+    // 6. Check that the byte at emailValueEndPos matches
     // the UTF-8 representation of ".
-    component endQuote = Selector(numEmailSubstrBytes);
+    component endQuote = Selector(numBytes);
     endQuote.index <== emailValueEndPos;
-    for (var i = 0; i < numEmailSubstrBytes; i ++) {
+    for (var i = 0; i < numBytes; i ++) {
         endQuote.in[i] <== emailSubstr[i];
     }
     endQuote.out === 0x22;
 
-    // 8. Check that emailSubstr contains domainName
-    component domainSlice = Slicer(numEmailSubstrBytes);
+    // 7. Check that emailSubstr contains domainName
+    component domainSlice = Slicer(numBytes);
     domainSlice.startIndex <== emailValueEndPos - numDomainBytes + 1;
     domainSlice.len <== numDomainBytes;
-    for (var i = 0; i < numEmailSubstrBytes; i ++) {
+    for (var i = 0; i < numBytes; i ++) {
         domainSlice.in[i] <== emailSubstr[i];
     }
 
-    component endsWith = EndsWith(numEmailSubstrBytes);
+    component endsWith = EndsWith(numBytes);
     endsWith.targetLen <== numDomainBytes;
-    for (var i = 0; i < numEmailSubstrBytes; i ++) {
+    for (var i = 0; i < numBytes; i ++) {
         endsWith.in[i] <== domainSlice.out[i];
         endsWith.target[i] <== domainName[i];
     }
     endsWith.out === 1;
 
-    // 9. Check that the 2 bytes before emailValueEndPos are not the UTF-8
+    // 8. Check that the 2 bytes before emailValueEndPos are not the UTF-8
     // representation of \\.
-    component beforeLastQuot1 = Selector(numEmailSubstrBytes);
-    component beforeLastQuot2 = Selector(numEmailSubstrBytes);
+    component beforeLastQuot1 = Selector(numBytes);
+    component beforeLastQuot2 = Selector(numBytes);
     beforeLastQuot1.index <== emailValueEndPos - 1;
     beforeLastQuot2.index <== emailValueEndPos - 2;
-    for (var i = 0; i < numEmailSubstrBytes; i ++) {
+    for (var i = 0; i < numBytes; i ++) {
         beforeLastQuot1.in[i] <== emailSubstr[i];
         beforeLastQuot2.in[i] <== emailSubstr[i];
     }
@@ -134,22 +119,22 @@ template EmailDomainProver(numBytes, numEmailSubstrBytes) {
     beforeLastQuot2Eq.out === 0;
 }
 
-template AreSpaces(numEmailSubstrBytes) {
-    signal input in[numEmailSubstrBytes];
+template AreSpaces(numBytes) {
+    signal input in[numBytes];
     signal input startPos;
     signal input numSpaces;
 
     var lengthInBits = 2;
-    while(2 ** lengthInBits < numEmailSubstrBytes) {
+    while(2 ** lengthInBits < numBytes) {
         lengthInBits ++;
     }
 
-    component range[numEmailSubstrBytes];
-    component eqs[numEmailSubstrBytes];
-    component correct[numEmailSubstrBytes];
-    component total = CalculateTotal(numEmailSubstrBytes);
+    component range[numBytes];
+    component eqs[numBytes];
+    component correct[numBytes];
+    component total = CalculateTotal(numBytes);
     //"email"<numSpaces>:  ...
-    for (var i = 0; i < numEmailSubstrBytes; i ++) {
+    for (var i = 0; i < numBytes; i ++) {
         range[i] = IsInRange(lengthInBits);
         range[i].in[0] <== startPos;
         range[i].in[1] <== startPos + 7 + numSpaces;
@@ -173,18 +158,18 @@ template AreSpaces(numEmailSubstrBytes) {
     total.sum === numSpaces;
 }
 
-template EmailName(numEmailSubstrBytes) {
-    signal input in[numEmailSubstrBytes];
+template EmailName(numBytes) {
+    signal input in[numBytes];
     signal input emailNameStartPos;
 
-    component selectorQ0 = Selector(numEmailSubstrBytes);
-    component selectorE = Selector(numEmailSubstrBytes);
-    component selectorM = Selector(numEmailSubstrBytes);
-    component selectorA = Selector(numEmailSubstrBytes);
-    component selectorI = Selector(numEmailSubstrBytes);
-    component selectorL = Selector(numEmailSubstrBytes);
-    component selectorQ1 = Selector(numEmailSubstrBytes);
-    for (var i = 0; i < numEmailSubstrBytes; i ++) {
+    component selectorQ0 = Selector(numBytes);
+    component selectorE = Selector(numBytes);
+    component selectorM = Selector(numBytes);
+    component selectorA = Selector(numBytes);
+    component selectorI = Selector(numBytes);
+    component selectorL = Selector(numBytes);
+    component selectorQ1 = Selector(numBytes);
+    for (var i = 0; i < numBytes; i ++) {
         selectorQ0.in[i] <== in[i];
         selectorE.in[i] <== in[i];
         selectorM.in[i] <== in[i];
