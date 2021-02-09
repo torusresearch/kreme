@@ -32,6 +32,21 @@ You need the following, preferably on a Linux machine:
 sudo apt install build-essential libgmp-dev libsodium-dev nlohmann-json3-dev
 ```
 
+You also need to download and build
+[`rapidsnark`](https://github.com/iden3/rapidsnark):
+
+```
+git clone https://github.com/iden3/rapidsnark.git &&
+cd rapidsnark &&
+npm i &&
+git submodule init &&
+git submodule update &&
+npx task createFieldSources &&
+npx task buildProver
+```
+
+Take note of the location of the `rapidsnark/build/prover` binary.
+
 ## Quick start
 
 First, clone this repository, install dependencies, and build the source code:
@@ -45,7 +60,56 @@ npm run bootstrap &&
 npm run build
 ```
 
-Run tests in the `circuits` directory. To do so, first run:
+
+### Configure circuits
+
+The file `config.example.json` contains the definition of one `JwtProver`
+circuit with one set of predefined parameters:
+
+```
+{
+    "template": "../circuits/circom/jwtProver.circom",
+    "component": "JwtProver",
+    "params": [1024, 48],
+    "zkeyUrls": {
+        "test": "https://www.dropbox.com/s/tnom6l07bbw46ft/JwtProver-1024_48.zkey?dl=1"
+    }
+}
+```
+
+This `JwtProver(1024, 48)` circuit supports proofs on JWT tokens with length
+between ______ and ______ **(TODO: calculate these values)** bytes, and an
+email address of up to `___ - 2` byts.
+
+### Compile test circuits
+
+```
+npm run compile-example
+```
+
+### Download test `.zkey` files
+
+Each `.zkey` file contain the proving and verification key for a particular
+circuit. They should be produced by a multi-party trusted setup. For testing
+purposes, we can download test files from a Dropbox folder:
+
+```
+node build/index.js downloadZkeys -o build/prodCircuits/ -t test -c compile_config.example.json
+```
+
+### Generate a proof
+
+Note that in this example, the `-r` flag specifies the location of the
+`rapidsnark` prover binary.
+
+```
+node build/index.js prove -j eyJhbGciOiJSUzI1NiIsImtpZCI6IjAzYjJkMjJjMmZlY2Y4NzNlZDE5ZTViOGNmNzA0YWZiN2UyZWQ0YmUiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL2FjY291bnRzLmdvb2dsZS5jb20iLCJhenAiOiI4NzY3MzMxMDUxMTYtaTBoajNzNTNxaWlvNWs5NXBycGZtajBocDBnbWd0b3IuYXBwcy5nb29nbGV1c2VyY29udGVudC5jb20iLCJhdWQiOiI4NzY3MzMxMDUxMTYtaTBoajNzNTNxaWlvNWs5NXBycGZtajBocDBnbWd0b3IuYXBwcy5nb29nbGV1c2VyY29udGVudC5jb20iLCJzdWIiOiIxMDEyMTIxMjA2MTg2NTM3MzIzNTciLCJlbWFpbCI6InRyb25za3l0YWRwb2xlQGdtYWlsLmNvbSIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJhdF9oYXNoIjoiYWJRb0h1RVRKQTk3dGEyT3QxcU94ZyIsIm5vbmNlIjoiWFJlTlV6M25sT0I3Vnd2ekdrd2JVZkJQWnNOUTVCIiwibmFtZSI6IlRyb25za3kgVGFkcG9sZSIsInBpY3R1cmUiOiJodHRwczovL2xoNi5nb29nbGV1c2VyY29udGVudC5jb20vLW5sSTJ3S0hRZGZJL0FBQUFBQUFBQUFJL0FBQUFBQUFBQUFBL0FNWnV1Y21OUHZNeS1BMVNoajVGcHBfckhPTGlzcGY2Smcvczk2LWMvcGhvdG8uanBnIiwiZ2l2ZW5fbmFtZSI6IlRyb25za3kiLCJmYW1pbHlfbmFtZSI6IlRhZHBvbGUiLCJsb2NhbGUiOiJlbiIsImlhdCI6MTYxMjI1ODc5NCwiZXhwIjoxNjEyMjYyMzk0LCJqdGkiOiIyMGViZmI5MmQ5NjRjMzZlMmEyYjg0NGM0MjEzOTI0MzNkMmY3NzZhIn0.OxzE6cGRvlALxcRPyL7sUDELGJ9fxcTkkqamQDvxPKqakTyU1Kz6BY71cdXp7wB2HnDep9qOBTdb55BLoMZ6NzxVvs5cReVMlJi6j3hqJecnyWag9fG9wwdi2Y_boLFeNcPcn4ZCGHMwJnuHuZEuXIdQT7xTTydYpK3oLJ2JvLk8fIEJqlPlvvyJpftwsnjXAuVef4aVKNZQLar4miMBL7YT6eaUHZQudCf30-QaQsxLnhgZr7G6J-TPhxE1nMnxAC2lRyVUtGpWFyVwdx0-nw3_LUs2npm388vQHjQgQxDhg6E_uEYy-vr4cchkB1jyJ1EfU0bEtFytyQdU3t7YuQ -d gmail.com -r ~/rapidsnark/build/prover -c ./build/prodCircuits/ -o proof.json -t test
+
+```
+
+## Tests
+
+To run tests in the `circuits` directory:
 
 ```bash
 cd circuits &&

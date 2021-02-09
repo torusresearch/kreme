@@ -1,5 +1,6 @@
 input.*.json
 *.wtns
+proof.json
 benchmarks/
 **/build/
 node_modules
