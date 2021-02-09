@@ -18,24 +18,13 @@ import * as crypto from 'crypto'
 import { genWitness, getSignalByName } from './utils'
 const ff = require('ffjavascript')
 const stringifyBigInts: (obj: object) => any = ff.utils.stringifyBigInts
+
 import {
     sha256ToFieldElements,
 } from 'kreme-crypto'
 
-const circuit = 'jwtProver_test'
-
-// Number of bytes of the padded preimage.
-const NUM_PREIMAGE_B64_BYTES = 256
-
-// Number of bytes of the substring of the preimage. This substring should
-// contain the base64url representation of the email address.
-const NUM_EMAIL_SUBSTR_B64_BYTES = 48
-
-const domain = '@company.xyz"'
-const email = `"email" :  "alice${domain}`
-
 const testCircuit = async (headerAndPayload: string) => {
-    const circuitInputs = genJwtProverCircuitInputs(headerAndPayload, domain)
+    const { circuitInputs } = genJwtProverCircuitInputs(headerAndPayload, domain)
 
     const start = Date.now()
     const witness = await genWitness(circuit, circuitInputs)
@@ -50,8 +39,11 @@ const testCircuit = async (headerAndPayload: string) => {
         //debug.push(out)
     //}
     //const debugStr = debug.join('')
-    debugger
 }
+
+const circuit = 'jwtProver_test'
+const domain = 'company.xyz'
+const email = `"email":"alice${domain}`
 
 describe('JWTProver circuit', () => {
     it('Should prove the existence of a domain name in the correct position and verify the hash (1)', async () => {

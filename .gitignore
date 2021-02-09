@@ -1,3 +1,5 @@
+input.*.json
+*.wtns
 benchmarks/
 **/build/
 node_modules

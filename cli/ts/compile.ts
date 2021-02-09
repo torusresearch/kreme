@@ -2,6 +2,7 @@ import { ArgumentParser } from 'argparse'
 import * as fs from 'fs'
 import * as path from 'path'
 import { compile as compileCircuit } from 'kreme-circuits'
+import { genCircuitFilePrefix } from './utils'
 
 const configureSubparsers = (subparsers: ArgumentParser) => {
     const compileCircuitsParser = subparsers.add_parser(
@@ -43,18 +44,14 @@ const configureSubparsers = (subparsers: ArgumentParser) => {
     )
 }
 
-const genCircuitFilePrefix = (component: string, params: number[]) => {
-    return `${component}-${params.join('_')}`
-}
-
 const compile = async (config: any, outDir: string, noClobber: boolean) => {
     fs.mkdirSync(outDir, { recursive: true })
     
-    const template = path.join(
-        path.resolve('./'),
-        config.circuits[0].template,
-    )
     for (const c of config.circuits) {
+        const template = path.join(
+            path.resolve('./'),
+            c.template,
+        )
         const circuitSrc = `include "${template}"; ` +
             `component main = ${c.component}(${c.params.join(', ')});`
 

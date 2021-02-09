@@ -2,35 +2,45 @@
     "circomRuntimePath": "../circuits/node_modules/circom_runtime",
     "ffiasmPath": "../circuits/node_modules/ffiasm",
     "circuits": [
+            {
+                "template": "../circuits/circom/jwtProver.circom",
+                "component": "JwtProver",
+                "params": [1024, 48],
+                "zkeyUrls": {
+                    "test": "https://www.dropbox.com/s/tnom6l07bbw46ft/JwtProver-1024_48.zkey?dl=1"
+                }
+            }
+    ],
+    "circuits2": [
         {
             "template": "../circuits/circom/jwtProver.circom",
             "component": "JwtProver",
-            "params": [64, 64]
+            "params": [64, 48]
         },
         {
             "template": "../circuits/circom/jwtProver.circom",
             "component": "JwtProver",
-            "params": [128, 64]
+            "params": [128, 48]
         },
         {
             "template": "../circuits/circom/jwtProver.circom",
             "component": "JwtProver",
-            "params": [192, 64]
+            "params": [192, 48]
         },
         {
             "template": "../circuits/circom/jwtProver.circom",
             "component": "JwtProver",
-            "params": [256, 64]
+            "params": [256, 48]
         },
         {
             "template": "../circuits/circom/jwtProver.circom",
             "component": "JwtProver",
-            "params": [320, 64]
+            "params": [320, 48]
         },
         {
             "template": "../circuits/circom/jwtProver.circom",
             "component": "JwtProver",
-            "params": [384, 64]
+            "params": [384, 48]
         }
     ]
 }

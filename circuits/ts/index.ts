@@ -12,7 +12,14 @@ import base64url from 'base64url'
 import { sha256ToFieldElements } from 'kreme-crypto'
 const SUPPORTED_EMAIL_B64_LENGTHS = [48, 88]
 
-const genJwtProverCircuitInputs = (headerAndPayload: string, domain: string) => {
+const calcJwtProverParams = (headerAndPayload: string) => {
+    const preimagePaddedBytesLength = (
+        Math.floor((headerAndPayload.length + 64) / 512) + 1
+    ) * 8
+}
+
+const genJwtProverCircuitInputs = (headerAndPayload: string, d: string) => {
+    const domain = `@${d}"`
     const preimagePaddedBytes = strToPaddedBytes(headerAndPayload)
     const NUM_PREIMAGE_B64_BYTES = preimagePaddedBytes.length
     const s = headerAndPayload.split('.')
@@ -83,7 +90,12 @@ const genJwtProverCircuitInputs = (headerAndPayload: string, domain: string) => 
         numSpacesAfterColon,
         expectedHash,
     })
-    return circuitInputs
+
+    return {
+        numEmailSubstrB64Bytes: NUM_EMAIL_SUBSTR_B64_BYTES,
+        numPreimageB64Bytes: NUM_PREIMAGE_B64_BYTES,
+        circuitInputs
+    }
 }
 
 // Slightly modified base64url algorithm. The . character is converted to
@@ -187,7 +199,7 @@ const compile = (
     ffiasmPath: string,
 ) => {
     const buildDir = path.dirname(filepath)
-    const witnessGenFile = replaceExt(filepath, '.witnessgen', '.circom')
+    const witnessGenFile = replaceExt(filepath, '', '.circom')
     const r1csFile = replaceExt(filepath, '.r1cs', '.circom')
     const wasmFile = replaceExt(filepath, '.wasm', '.circom')
     const watFile = replaceExt(filepath, '.wat', '.circom')

@@ -5,6 +5,9 @@ import * as path from 'path'
 import * as shelljs from 'shelljs'
 import base64url from 'base64url'
 import * as crypto from 'crypto'
+import {
+    genJwtProverCircuitInputs
+} from 'kreme-circuits'
 
 const configureSubparsers = (subparsers: ArgumentParser) => {
     const compileCircuitsParser = subparsers.add_parser(
@@ -22,6 +25,61 @@ const configureSubparsers = (subparsers: ArgumentParser) => {
             help: 'The JWT (base64 encoded)',
         }
     )
+
+    compileCircuitsParser.add_argument(
+        '-d',
+        '--domain',
+        {
+            required: true,
+            action: 'store',
+            type: 'str',
+            help: 'The domain name (e.g. company.xyz)',
+        }
+    )
+
+    compileCircuitsParser.add_argument(
+        '-r',
+        '--rapidsnark',
+        {
+            required: true,
+            action: 'store',
+            type: 'str',
+            help: 'The path to the rapidsnark binary',
+        }
+    )
+
+    compileCircuitsParser.add_argument(
+        '-k',
+        '--keep',
+        {
+            required: false,
+            action: 'store_true',
+            help: 'Do not delete witness and input files',
+        }
+    )
+
+    compileCircuitsParser.add_argument(
+        '-t',
+        '--type',
+        {
+            required: true,
+            action: 'store',
+            choices: ['test', 'prod'],
+            help: 'The type of .zkey file: for testing (test) or production (prod)',
+        }
+    )
+
+    compileCircuitsParser.add_argument(
+        '-c',
+        '--compiled-dir',
+        {
+            required: true,
+            action: 'store',
+            type: 'str',
+            help: 'The path to the directory which stores the compiled circuits',
+        }
+    )
+
     compileCircuitsParser.add_argument(
         '-o',
         '--output',
@@ -34,25 +92,76 @@ const configureSubparsers = (subparsers: ArgumentParser) => {
     )
 }
 
+const prove = async (
+    jwt: string,
+    domain: string,
+    compiledDir: string,
+    rapidsnarkPath: string,
+    outputPath: string,
+    keepFiles: boolean,
+    zkeyType: string,
+) => {
+    const dirname = path.resolve(path.dirname(outputPath))
+    const temp = Date.now().toString() + '.' + (Math.random().toString().slice(3, 8)) 
+    const inputFilepath = path.join(
+        dirname,
+        `input.${temp}.json`
+    )
+    const wtnsFilepath = path.join(
+        dirname,
+        `witness.${temp}.wtns`
+    )
 
-const prove = async (jwt: string, output: string) => {
     const s = jwt.split('.')
     const header = base64url.decode(s[0])
     const payload = base64url.decode(s[1])
-    const b64Plaintext = s[0] + '.' + s[1]
-    const b = Buffer.from(b64Plaintext, 'utf8')
-    const hash = crypto.createHash('sha256')
-        .update(b)
-        .digest('hex')
-    const hashBuf = Buffer.from(hash, 'hex')
-    const expectedHash = [
-        BigInt('0x' + hashBuf.slice(0, 16).toString('hex')),
-        BigInt('0x' + hashBuf.slice(16, 32).toString('hex')),
-    ]
+    const headerAndPayload = s[0] + '.' + s[1]
 
-    const plaintext = header + '.' + payload
+    const {
+        circuitInputs,
+        numEmailSubstrB64Bytes,
+        numPreimageB64Bytes,
+    } = genJwtProverCircuitInputs(headerAndPayload, domain)
 
-    console.log(plaintext)
+    const witnessGenExe = path.join(
+        path.resolve(compiledDir),
+        `JwtProver-${numPreimageB64Bytes}_${numEmailSubstrB64Bytes}`
+    )
+
+    const zkeyPath = path.join(
+        path.resolve(compiledDir),
+        `JwtProver-${numPreimageB64Bytes}_${numEmailSubstrB64Bytes}.${zkeyType}.zkey`
+    )
+
+    fs.writeFileSync(
+        inputFilepath,
+        JSON.stringify(circuitInputs),
+    )
+
+    const witnessGenCmd = `${witnessGenExe} ${inputFilepath} ${wtnsFilepath}`
+    const witnessGenOut = shelljs.exec(witnessGenCmd)
+    if (witnessGenOut.code !== 0 || witnessGenOut.stderr) {
+        console.error('Error: could not generate witness.')
+        console.error(witnessGenOut)
+        return 1
+    }
+
+    const proveCmd = `${rapidsnarkPath} ${zkeyPath} ${wtnsFilepath} ${outputPath}`
+    console.log(proveCmd)
+    const proveOut = shelljs.exec(proveCmd)
+    if (proveOut.code !== 0 || proveOut.stderr) {
+        console.error('Error: could not generate proof.')
+        console.error(proveOut)
+        return 1
+    }
+
+    // Delete witness and input files
+    if (!keepFiles) {
+        const delCmd = `rm -f ${inputFilepath} ${wtnsFilepath}`
+        shelljs.exec(delCmd)
+    }
+    
+     return 0
 }
 
 export { prove, configureSubparsers }
