@@ -10,6 +10,8 @@
         "test": "jest",
         "test-sha256Hasher": "jest sha256Hasher.test.ts",
         "test-sha256Hasher-debug": "node --inspect-brk ./node_modules/.bin/jest sha256Hasher.test.ts",
+        "test-byteHasher": "jest byteHasher.test.ts",
+        "test-byteHasher-debug": "node --inspect-brk ./node_modules/.bin/jest byteHasher.test.ts",
         "test-jwtProver": "jest jwtProver.test.ts",
         "test-jwtProver-debug": "node --inspect-brk ./node_modules/.bin/jest jwtProverProd.test.ts",
         "test-jwtProverProd": "jest jwtProver.test.ts",

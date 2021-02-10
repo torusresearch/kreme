@@ -14,6 +14,9 @@ template JwtProver(numPreimageB64PaddedBytes, numEmailSubstrB64Bytes) {
 
     signal private input preimageB64[numPreimageB64PaddedBytes];
 
+    // TODO: check that the (base64) `.` character shows up before
+    // emailSubStrB64
+
     // ------------------------------------------------------------------------
     // 1. Accept and check a shorter array of elements that represent the email
     // substring
