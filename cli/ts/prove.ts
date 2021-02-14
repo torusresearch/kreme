@@ -1,12 +1,11 @@
 import { ArgumentParser } from 'argparse'
-import jwt_decode from 'jwt-decode'
 import * as fs from 'fs'
 import * as path from 'path'
 import * as shelljs from 'shelljs'
 import base64url from 'base64url'
 import * as crypto from 'crypto'
 import {
-    genJwtProverCircuitInputs
+    genJwtHiddenEmailAddressProverCircuitInputs,
 } from 'kreme-circuits'
 
 const configureSubparsers = (subparsers: ArgumentParser) => {
@@ -27,13 +26,24 @@ const configureSubparsers = (subparsers: ArgumentParser) => {
     )
 
     compileCircuitsParser.add_argument(
-        '-d',
-        '--domain',
+        '-e',
+        '--email',
         {
             required: true,
             action: 'store',
             type: 'str',
-            help: 'The domain name (e.g. company.xyz)',
+            help: 'The secret email address',
+        }
+    )
+
+    compileCircuitsParser.add_argument(
+        '-s',
+        '--salt',
+        {
+            required: true,
+            action: 'store',
+            type: 'str',
+            help: 'The secret salt to the commitment to the email address',
         }
     )
 
@@ -94,7 +104,8 @@ const configureSubparsers = (subparsers: ArgumentParser) => {
 
 const prove = async (
     jwt: string,
-    domain: string,
+    emailAddress: string,
+    salt: string,
     compiledDir: string,
     rapidsnarkPath: string,
     outputPath: string,
@@ -121,16 +132,16 @@ const prove = async (
         circuitInputs,
         numEmailSubstrB64Bytes,
         numPreimageB64Bytes,
-    } = genJwtProverCircuitInputs(headerAndPayload, domain)
+    } = genJwtHiddenEmailAddressProverCircuitInputs(headerAndPayload, emailAddress, BigInt(salt))
 
     const witnessGenExe = path.join(
         path.resolve(compiledDir),
-        `JwtProver-${numPreimageB64Bytes}_${numEmailSubstrB64Bytes}`
+        `JwtHiddenEmailAddressProver-${numPreimageB64Bytes}_${numEmailSubstrB64Bytes}`
     )
 
     const zkeyPath = path.join(
         path.resolve(compiledDir),
-        `JwtProver-${numPreimageB64Bytes}_${numEmailSubstrB64Bytes}.${zkeyType}.zkey`
+        `JwtHiddenEmailAddressProver-${numPreimageB64Bytes}_${numEmailSubstrB64Bytes}.${zkeyType}.zkey`
     )
 
     fs.writeFileSync(

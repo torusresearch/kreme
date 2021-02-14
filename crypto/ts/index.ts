@@ -34,7 +34,6 @@ const hashBytes = (bytes: BigInt[], salt: BigInt) => {
         bits += bitStr
     }
 
-    debugger
     assert(bits.length === numElements * 248)
 
     const inputs: BigInt[] = []

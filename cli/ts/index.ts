@@ -74,7 +74,16 @@ const main = async () => {
             return 1
         }
     } else if (args.subcommand === 'prove') {
-        return (await prove(args.jwt, args.domain, args.compiled_dir, args.rapidsnark, args.output, args.keep, args['type']))
+        return (await prove(
+            args.jwt,
+            args.email,
+            args.salt,
+            args.compiled_dir,
+            args.rapidsnark,
+            args.output,
+            args.keep,
+            args['type'],
+        ))
     }
 }
 

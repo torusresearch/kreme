@@ -1,3 +1,3 @@
-include "../emailDomainProver.circom"; 
+include "../email.circom"; 
 
 component main = EmailDomainProver(64);

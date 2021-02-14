@@ -1,0 +1,5 @@
+**/node_modules
+**/build
+*.wtns
+report.*.json
+.git/

@@ -1,0 +1,12 @@
+version: "3.9"
+services:
+  kreme:
+    build:
+      context: ./
+    volumes:
+      - type: bind
+        target: /zkeys
+        source: ./cli/build/prodCircuits/
+
+volumes:
+  zkeys:

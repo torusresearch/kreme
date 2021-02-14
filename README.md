@@ -44,7 +44,7 @@ You need the following, preferably on a Linux machine:
 - `gcc`, `g++`, `libgmp-dev`, `nlohmann-json3-dev`, and `libsodium-dev`:
 
 ```bash
-sudo apt install build-essential libgmp-dev libsodium-dev nlohmann-json3-dev
+sudo apt install build-essential libgmp-dev libsodium-dev nlohmann-json3-dev nasm
 ```
 
 You also need to download and build

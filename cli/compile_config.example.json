@@ -4,43 +4,11 @@
     "circuits": [
             {
                 "template": "../circuits/circom/jwtProver.circom",
-                "component": "JwtProver",
+                "component": "JwtHiddenEmailAddressProver",
                 "params": [1024, 48],
                 "zkeyUrls": {
-                    "test": "https://www.dropbox.com/s/tnom6l07bbw46ft/JwtProver-1024_48.zkey?dl=1"
+                    "test": ""
                 }
             }
-    ],
-    "circuits2": [
-        {
-            "template": "../circuits/circom/jwtProver.circom",
-            "component": "JwtProver",
-            "params": [64, 48]
-        },
-        {
-            "template": "../circuits/circom/jwtProver.circom",
-            "component": "JwtProver",
-            "params": [128, 48]
-        },
-        {
-            "template": "../circuits/circom/jwtProver.circom",
-            "component": "JwtProver",
-            "params": [192, 48]
-        },
-        {
-            "template": "../circuits/circom/jwtProver.circom",
-            "component": "JwtProver",
-            "params": [256, 48]
-        },
-        {
-            "template": "../circuits/circom/jwtProver.circom",
-            "component": "JwtProver",
-            "params": [320, 48]
-        },
-        {
-            "template": "../circuits/circom/jwtProver.circom",
-            "component": "JwtProver",
-            "params": [384, 48]
-        }
     ]
 }
