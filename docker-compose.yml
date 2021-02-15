@@ -7,6 +7,11 @@ services:
       - type: bind
         target: /zkeys
         source: ./cli/build/prodCircuits/
+      - type: bind
+        target: /proofs
+        source: ./
 
 volumes:
   zkeys:
+
+  proofs:

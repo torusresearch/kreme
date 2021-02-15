@@ -68,7 +68,7 @@ First, clone this repository, install dependencies, and build the source code:
 
 ```bash
 # TODO
-git clone ..... &&
+git clone https://github.com/weijiekoh/kreme &&
 cd kreme &&
 npm i &&
 npm run bootstrap &&
@@ -93,7 +93,7 @@ circuit with one set of predefined parameters:
 
 This `JwtProver(1024, 48)` circuit supports proofs on JWT tokens with length
 between ______ and ______ **(TODO: calculate these values)** bytes, and an
-email address of up to `___ - 2` byts.
+email address of up to `___` bytes.
 
 ### Compile test circuits
 
@@ -117,9 +117,13 @@ Note that in this example, the `-r` flag specifies the location of the
 `rapidsnark` prover binary.
 
 ```
-node build/index.js prove -j eyJhbGciOiJSUzI1NiIsImtpZCI6IjAzYjJkMjJjMmZlY2Y4NzNlZDE5ZTViOGNmNzA0YWZiN2UyZWQ0YmUiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL2FjY291bnRzLmdvb2dsZS5jb20iLCJhenAiOiI4NzY3MzMxMDUxMTYtaTBoajNzNTNxaWlvNWs5NXBycGZtajBocDBnbWd0b3IuYXBwcy5nb29nbGV1c2VyY29udGVudC5jb20iLCJhdWQiOiI4NzY3MzMxMDUxMTYtaTBoajNzNTNxaWlvNWs5NXBycGZtajBocDBnbWd0b3IuYXBwcy5nb29nbGV1c2VyY29udGVudC5jb20iLCJzdWIiOiIxMDEyMTIxMjA2MTg2NTM3MzIzNTciLCJlbWFpbCI6InRyb25za3l0YWRwb2xlQGdtYWlsLmNvbSIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJhdF9oYXNoIjoiYWJRb0h1RVRKQTk3dGEyT3QxcU94ZyIsIm5vbmNlIjoiWFJlTlV6M25sT0I3Vnd2ekdrd2JVZkJQWnNOUTVCIiwibmFtZSI6IlRyb25za3kgVGFkcG9sZSIsInBpY3R1cmUiOiJodHRwczovL2xoNi5nb29nbGV1c2VyY29udGVudC5jb20vLW5sSTJ3S0hRZGZJL0FBQUFBQUFBQUFJL0FBQUFBQUFBQUFBL0FNWnV1Y21OUHZNeS1BMVNoajVGcHBfckhPTGlzcGY2Smcvczk2LWMvcGhvdG8uanBnIiwiZ2l2ZW5fbmFtZSI6IlRyb25za3kiLCJmYW1pbHlfbmFtZSI6IlRhZHBvbGUiLCJsb2NhbGUiOiJlbiIsImlhdCI6MTYxMjI1ODc5NCwiZXhwIjoxNjEyMjYyMzk0LCJqdGkiOiIyMGViZmI5MmQ5NjRjMzZlMmEyYjg0NGM0MjEzOTI0MzNkMmY3NzZhIn0.OxzE6cGRvlALxcRPyL7sUDELGJ9fxcTkkqamQDvxPKqakTyU1Kz6BY71cdXp7wB2HnDep9qOBTdb55BLoMZ6NzxVvs5cReVMlJi6j3hqJecnyWag9fG9wwdi2Y_boLFeNcPcn4ZCGHMwJnuHuZEuXIdQT7xTTydYpK3oLJ2JvLk8fIEJqlPlvvyJpftwsnjXAuVef4aVKNZQLar4miMBL7YT6eaUHZQudCf30-QaQsxLnhgZr7G6J-TPhxE1nMnxAC2lRyVUtGpWFyVwdx0-nw3_LUs2npm388vQHjQgQxDhg6E_uEYy-vr4cchkB1jyJ1EfU0bEtFytyQdU3t7YuQ -d gmail.com -r ~/rapidsnark/build/prover -c ./build/prodCircuits/ -o proof.json -t test
+node build/index.js prove -j eyJhbGciOiJSUzI1NiIsImtpZCI6IjAzYjJkMjJjMmZlY2Y4NzNlZDE5ZTViOGNmNzA0YWZiN2UyZWQ0YmUiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL2FjY291bnRzLmdvb2dsZS5jb20iLCJhenAiOiI4NzY3MzMxMDUxMTYtaTBoajNzNTNxaWlvNWs5NXBycGZtajBocDBnbWd0b3IuYXBwcy5nb29nbGV1c2VyY29udGVudC5jb20iLCJhdWQiOiI4NzY3MzMxMDUxMTYtaTBoajNzNTNxaWlvNWs5NXBycGZtajBocDBnbWd0b3IuYXBwcy5nb29nbGV1c2VyY29udGVudC5jb20iLCJzdWIiOiIxMDEyMTIxMjA2MTg2NTM3MzIzNTciLCJlbWFpbCI6InRyb25za3l0YWRwb2xlQGdtYWlsLmNvbSIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJhdF9oYXNoIjoiYWJRb0h1RVRKQTk3dGEyT3QxcU94ZyIsIm5vbmNlIjoiWFJlTlV6M25sT0I3Vnd2ekdrd2JVZkJQWnNOUTVCIiwibmFtZSI6IlRyb25za3kgVGFkcG9sZSIsInBpY3R1cmUiOiJodHRwczovL2xoNi5nb29nbGV1c2VyY29udGVudC5jb20vLW5sSTJ3S0hRZGZJL0FBQUFBQUFBQUFJL0FBQUFBQUFBQUFBL0FNWnV1Y21OUHZNeS1BMVNoajVGcHBfckhPTGlzcGY2Smcvczk2LWMvcGhvdG8uanBnIiwiZ2l2ZW5fbmFtZSI6IlRyb25za3kiLCJmYW1pbHlfbmFtZSI6IlRhZHBvbGUiLCJsb2NhbGUiOiJlbiIsImlhdCI6MTYxMjI1ODc5NCwiZXhwIjoxNjEyMjYyMzk0LCJqdGkiOiIyMGViZmI5MmQ5NjRjMzZlMmEyYjg0NGM0MjEzOTI0MzNkMmY3NzZhIn0.OxzE6cGRvlALxcRPyL7sUDELGJ9fxcTkkqamQDvxPKqakTyU1Kz6BY71cdXp7wB2HnDep9qOBTdb55BLoMZ6NzxVvs5cReVMlJi6j3hqJecnyWag9fG9wwdi2Y_boLFeNcPcn4ZCGHMwJnuHuZEuXIdQT7xTTydYpK3oLJ2JvLk8fIEJqlPlvvyJpftwsnjXAuVef4aVKNZQLar4miMBL7YT6eaUHZQudCf30-QaQsxLnhgZr7G6J-TPhxE1nMnxAC2lRyVUtGpWFyVwdx0-nw3_LUs2npm388vQHjQgQxDhg6E_uEYy-vr4cchkB1jyJ1EfU0bEtFytyQdU3t7YuQ -d gmail.com -r ~/rapidsnark/build/prover -c ./build/prodCircuits/ -o proof.json -p public.json -t test
 
 ```
+
+**Note**: the `public.json` file may contain the value `null`, possibly due to
+a bug in `rapidsnark`. This is not a breaking issue as the public inputs to the
+circuit can be easily created in code.
 
 ## Tests
 
@@ -139,3 +143,68 @@ npm run test
 ```
 
 ## Production deployment
+
+The following have been tested with `docker-compose` 1.28.2 and Docker 19.03.6.
+
+First, clone this repository, install dependencies, and build the source code:
+
+```bash
+git clone https://github.com/weijiekoh/kreme &&
+cd kreme &&
+npm i &&
+npm run bootstrap &&
+npm run build
+```
+
+Next, compile the circuits:
+
+```
+cd cli &&
+node build/index.js compile -c <CONFIG FILE> -o build/prodCircuits/ -nc
+```
+
+Note that `CONFIG_FILE` should follow the format of
+`compile_config.example.json`.
+
+Download the production `.zkey` file for each circuit and place them in
+`build/prodCircuits`.
+
+Build the container:
+
+```bash
+./scripts/buildImages.sh
+```
+
+In `kreme/`, run the container. This will create a container `kreme_kreme`
+which sleeps indefinitely. This allows you to run `docker-compose exec` to
+generate proofs with less startup overhead.
+
+```
+docker-compose up
+```
+
+To generate a proof, run:
+
+```
+docker-compose exec -w /kreme/cli/ kreme node build/index.js prove \
+    -j <JWT HEADER AND PAYLOAD> \
+    -e <EMAIL ADDDRESS> \
+    -s <SALT> \
+    -r /rapidsnark/build/prover \
+    -t prod \
+    -c /zkeys \
+    -o /proofs/proof.json \
+    -p /proofs/public.json
+```
+
+Note that the Docker container is configured to have bind-mount volumes at
+`/zkeys` and `/proofs`. This allows the CLI to access the `.zkey` files on the
+host machine and to write the `proof.json` and `public.json` files to the host
+machine.
+
+An example using a test `JwtHiddenEmailAddressProver-1024_48.test.zkey` file in
+`cli/build/prodCircuits`:
+
+```bash
+docker-compose exec -w /kreme/cli/ kreme node build/index.js prove -j eyJhbGciOiJSUzI1NiIsImtpZCI6IjAzYjJkMjJjMmZlY2Y4NzNlZDE5ZTViOGNmNzA0YWZiN2UyZWQ0YmUiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL2FjY291bnRzLmdvb2dsZS5jb20iLCJhenAiOiI4NzY3MzMxMDUxMTYtaTBoajNzNTNxaWlvNWs5NXBycGZtajBocDBnbWd0b3IuYXBwcy5nb29nbGV1c2VyY29udGVudC5jb20iLCJhdWQiOiI4NzY3MzMxMDUxMTYtaTBoajNzNTNxaWlvNWs5NXBycGZtajBocDBnbWd0b3IuYXBwcy5nb29nbGV1c2VyY29udGVudC5jb20iLCJzdWIiOiIxMDEyMTIxMjA2MTg2NTM3MzIzNTciLCJlbWFpbCI6InRyb25za3l0YWRwb2xlQGdtYWlsLmNvbSIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJhdF9oYXNoIjoiY3doLWp4Z0VmUWtuamlmczkwRUV6dyIsIm5vbmNlIjoiVDVzUWJyaUpTd3dIMUM0U2RQeEprTGJ1Mm9yNGs4IiwibmFtZSI6IlRyb25za3kgVGFkcG9sZSIsInBpY3R1cmUiOiJodHRwczovL2xoNi5nb29nbGV1c2VyY29udGVudC5jb20vLW5sSTJ3S0hRZGZJL0FBQUFBQUFBQUFJL0FBQUFBQUFBQUFBL0FNWnV1Y21OUHZNeS1BMVNoajVGcHBfckhPTGlzcGY2Smcvczk2LWMvcGhvdG8uanBnIiwiZ2l2ZW5fbmFtZSI6IlRyb25za3kiLCJmYW1pbHlfbmFtZSI6IlRhZHBvbGUiLCJsb2NhbGUiOiJlbiIsImlhdCI6MTYxMjI1ODU4MiwiZXhwIjoxNjEyMjYyMTgyLCJqdGkiOiIwNDEzODAzZWM5YzNiMDk4ZTgwNmFiM2VhNjBmZTM2OGJmZjRkNzJkIn0 -e tronskytadpole@gmail.com -s 0 -r /rapidsnark/build/prover -t test -c /zkeys -o /proofs/proof.json -p /proofs/public.json
+```
