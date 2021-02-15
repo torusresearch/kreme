@@ -81,6 +81,7 @@ const main = async () => {
             args.compiled_dir,
             args.rapidsnark,
             args.output,
+            args['public'],
             args.keep,
             args['type'],
         ))

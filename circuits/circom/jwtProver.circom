@@ -202,29 +202,29 @@ template JwtProver(numPreimageB64PaddedBytes, numEmailSubstrB64Bytes) {
         emailSubstrUtf8Bytes[i] <== emailB2n[i].out;
     }
 
-    /*// ------------------------------------------------------------------------*/
-    /*// 6. Check that the SHA256 hash of the base64url-encoded preimage is*/
-    /*// correct*/
-    /*component plaintextToBits[numPreimageB64PaddedBytes];*/
-    /*for (var i = 0; i < numPreimageB64PaddedBytes; i ++) {*/
-        /*plaintextToBits[i] = Num2Bits(8);*/
-        /*plaintextToBits[i].in <== preimageB64[i];*/
-    /*}*/
+    // ------------------------------------------------------------------------
+    // 6. Check that the SHA256 hash of the base64url-encoded preimage is
+    // correct
+    component plaintextToBits[numPreimageB64PaddedBytes];
+    for (var i = 0; i < numPreimageB64PaddedBytes; i ++) {
+        plaintextToBits[i] = Num2Bits(8);
+        plaintextToBits[i].in <== preimageB64[i];
+    }
 
-    /*component sha256 = Sha256Hasher(numPreimageB64PaddedBytes * 8);*/
-    /*for (var i = 0; i < numPreimageB64PaddedBytes; i ++) {*/
-        /*for (var j = 0; j < 8; j ++) {*/
-            /*sha256.paddedIn[i * 8 + j] <== plaintextToBits[i].out[7 - j];*/
-        /*}*/
-    /*}*/
+    component sha256 = Sha256Hasher(numPreimageB64PaddedBytes * 8);
+    for (var i = 0; i < numPreimageB64PaddedBytes; i ++) {
+        for (var j = 0; j < 8; j ++) {
+            sha256.paddedIn[i * 8 + j] <== plaintextToBits[i].out[7 - j];
+        }
+    }
 
-    /*component ehToBits0 = Num2Bits(128);*/
-    /*component ehToBits1 = Num2Bits(128);*/
-    /*ehToBits0.in <== expectedHash[0];*/
-    /*ehToBits1.in <== expectedHash[1];*/
+    component ehToBits0 = Num2Bits(128);
+    component ehToBits1 = Num2Bits(128);
+    ehToBits0.in <== expectedHash[0];
+    ehToBits1.in <== expectedHash[1];
 
-    /*for (var i = 0; i < 128; i ++) {*/
-        /*sha256.out[i] === ehToBits0.out[128 - i - 1];*/
-        /*sha256.out[i + 128] === ehToBits1.out[128 - i - 1];*/
-    /*}*/
+    for (var i = 0; i < 128; i ++) {
+        sha256.out[i] === ehToBits0.out[128 - i - 1];
+        sha256.out[i + 128] === ehToBits1.out[128 - i - 1];
+    }
 }

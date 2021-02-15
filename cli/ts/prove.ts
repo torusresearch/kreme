@@ -100,6 +100,17 @@ const configureSubparsers = (subparsers: ArgumentParser) => {
             help: 'The path to the proof.json output file',
         }
     )
+
+    compileCircuitsParser.add_argument(
+        '-p',
+        '--public',
+        {
+            required: true,
+            action: 'store',
+            type: 'str',
+            help: 'The path to the public.json output file',
+        }
+    )
 }
 
 const prove = async (
@@ -109,6 +120,7 @@ const prove = async (
     compiledDir: string,
     rapidsnarkPath: string,
     outputPath: string,
+    publicJsonPath: string,
     keepFiles: boolean,
     zkeyType: string,
 ) => {
@@ -157,7 +169,7 @@ const prove = async (
         return 1
     }
 
-    const proveCmd = `${rapidsnarkPath} ${zkeyPath} ${wtnsFilepath} ${outputPath}`
+    const proveCmd = `${rapidsnarkPath} ${zkeyPath} ${wtnsFilepath} ${outputPath} ${publicJsonPath}`
     console.log(proveCmd)
     const proveOut = shelljs.exec(proveCmd)
     if (proveOut.code !== 0 || proveOut.stderr) {

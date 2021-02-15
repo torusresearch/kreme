@@ -8,6 +8,7 @@ RUN apt-get update -qq --fix-missing && \
 # Install rapidsnark
 RUN git clone https://github.com/iden3/rapidsnark.git && \
     cd rapidsnark && \
+    git checkout 7dab3aa08f0ed621b093d97109edb1893e7b49cb && \
     npm i && \
     git submodule init && \
     git submodule update && \
@@ -19,3 +20,5 @@ COPY . /kreme/
 RUN npm i && \
     npm run bootstrap && \
     npm run build
+
+CMD exec /bin/bash -c "trap : TERM INT; sleep infinity & wait"
