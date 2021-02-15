@@ -20,6 +20,7 @@
     "license": "Copyright",
     "dependencies": {
         "kreme-circuits": "^0.0.1",
+        "kreme-crypto": "^0.0.1",
         "@types/jest": "26.0.20",
         "@types/node": "14.14.28",
         "assert": "^2.0.0",

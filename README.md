@@ -121,6 +121,35 @@ node build/index.js prove -j eyJhbGciOiJSUzI1NiIsImtpZCI6IjAzYjJkMjJjMmZlY2Y4NzN
 
 ```
 
+### Verify a proof
+
+First, generate the commitment to the email address you wish to verify for:
+
+```bash
+node build/index.js genEmailComm -e tronskytadpole@gmail.com -s 0 -l 48
+```
+
+In this case, the salt is `0` and the length is 48, which is a hardcoded
+parameter to the circuit to generate the proof above. The commitment is:
+
+```
+29fe2bffec5df2bf054d01cad71a1a388a34906fba15ce8610961cc59271e63a
+```
+
+To verify the proof, run:
+
+```bash
+node build/index.js verify -j 79b7b9ac9a06284502bceb80d2b3ec0481f6ed1f14ddcb787a2cb84435b4c8f9 \
+    -p ./proof.json \
+    -z ./build/prodCircuits/JwtHiddenEmailAddressProver-1024_48.test.zkey \
+    -e 0x29fe2bffec5df2bf054d01cad71a1a388a34906fba15ce8610961cc59271e63a
+```
+
+Note that `79b7b9ac9a06284502bceb80d2b3ec0481f6ed1f14ddcb787a2cb84435b4c8f9` is
+the SHA256 hash of the JWT header and payload `eyJhbGci...`. You can use [this
+online tool](https://emn178.github.io/online-tools/sha256.html) to generate such
+hashes.
+
 ## Tests
 
 To run tests in the `circuits` directory:

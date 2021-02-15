@@ -1,6 +1,7 @@
 import * as crypto from 'crypto'
 import * as assert from 'assert'
 import { poseidon } from 'circomlib'
+import { strToByteArr } from 
 
 const hashLeftRight = (left: BigInt, right: BigInt) => {
     return poseidon([left, right])
@@ -90,7 +91,11 @@ const sha256ToFieldElements = (plaintext: string): BigInt[] => {
     const expectedHash = crypto.createHash('sha256')
         .update(b)
         .digest('hex')
-    const expectedHashBuf = Buffer.from(expectedHash, 'hex')
+    return sha256HashToFieldElements(expectedHash)
+}
+
+const sha256HashToFieldElements = (hash: string): BigInt[] => {
+    const expectedHashBuf = Buffer.from(hash, 'hex')
     return [
         BigInt('0x' + expectedHashBuf.slice(0, 16).toString('hex')),
         BigInt('0x' + expectedHashBuf.slice(16, 32).toString('hex')),
@@ -99,6 +104,7 @@ const sha256ToFieldElements = (plaintext: string): BigInt[] => {
 
 export {
     sha256ToFieldElements,
+    sha256HashToFieldElements,
     sha256ToBigInt,
     hashBytes,
     genRandomSalt,

@@ -21,9 +21,19 @@ import {
 } from './downloadZkeys'
 
 import {
+    genEmailComm,
+    configureSubparsers as configureSubparsersForGenEmailComm,
+} from './genEmailComm'
+
+import {
     prove,
     configureSubparsers as configureSubparsersForProve,
 } from './prove'
+
+import {
+    verify,
+    configureSubparsers as configureSubparsersForVerify,
+} from './verify'
 
 const main = async () => {
     const parser = new argparse.ArgumentParser({ 
@@ -40,7 +50,9 @@ const main = async () => {
     configureSubparsersForDownloadPhase1(subparsers)
     configureSubparsersForGenZkeys(subparsers)
     configureSubparsersForDownloadZkeys(subparsers)
+    configureSubparsersForGenEmailComm(subparsers)
     configureSubparsersForProve(subparsers)
+    configureSubparsersForVerify(subparsers)
 
     const args = parser.parse_args()
     
@@ -73,6 +85,12 @@ const main = async () => {
         } catch {
             return 1
         }
+    } else if (args.subcommand === 'genEmailComm') {
+        return (await genEmailComm(
+            args.email,
+            args.salt,
+            args.length,
+        ))
     } else if (args.subcommand === 'prove') {
         return (await prove(
             args.jwt,
@@ -85,6 +103,13 @@ const main = async () => {
             args.keep,
             args['type'],
         ))
+    } else if (args.subcommand === 'verify') {
+        return await verify(
+            args.zkey,
+            args.proof,
+            args.email_address_commitment,
+            args.jwt_hash,
+        )
     }
 }
 

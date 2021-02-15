@@ -632,7 +632,17 @@ const plaintext2paddedBitArray = (plaintext: string, chunkLength: number) => {
     return bits
 }
 
+const genEmailComm = (email: string, salt: BigInt, length: number): BigInt => {
+    const ba = strToByteArr(email, length)
+    const comm = hashBytes(
+        ba.map((x) => BigInt(x)),
+        salt,
+    )
+    return comm
+}
+
 export {
+    genEmailComm,
     jwtBytesToBits,
     plaintext2paddedBitArray,
     genSubstrByteArr,
