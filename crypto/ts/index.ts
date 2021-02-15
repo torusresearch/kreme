@@ -1,7 +1,6 @@
 import * as crypto from 'crypto'
 import * as assert from 'assert'
 import { poseidon } from 'circomlib'
-import { strToByteArr } from 
 
 const hashLeftRight = (left: BigInt, right: BigInt) => {
     return poseidon([left, right])
