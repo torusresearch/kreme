@@ -140,8 +140,8 @@ To verify the proof, run:
 
 ```bash
 node build/index.js verify -j 79b7b9ac9a06284502bceb80d2b3ec0481f6ed1f14ddcb787a2cb84435b4c8f9 \
-    -p ./proof.json \
-    -z ./build/prodCircuits/JwtHiddenEmailAddressProver-1024_48.test.zkey \
+    -p /proofs/proof.json \
+    -z /zkeys/JwtHiddenEmailAddressProver-1024_48.test.zkey \
     -e 0x29fe2bffec5df2bf054d01cad71a1a388a34906fba15ce8610961cc59271e63a
 ```
 
