@@ -140,8 +140,8 @@ To verify the proof, run:
 
 ```bash
 node build/index.js verify -j 79b7b9ac9a06284502bceb80d2b3ec0481f6ed1f14ddcb787a2cb84435b4c8f9 \
-    -p /proofs/proof.json \
-    -z /zkeys/JwtHiddenEmailAddressProver-1024_48.test.zkey \
+    -p ./proof.json \
+    -z ./build/prodCircuits/JwtHiddenEmailAddressProver-1024_48.test.zkey \
     -e 0x29fe2bffec5df2bf054d01cad71a1a388a34906fba15ce8610961cc59271e63a
 ```
 
@@ -232,4 +232,14 @@ An example using a test `JwtHiddenEmailAddressProver-1024_48.test.zkey` file in
 
 ```bash
 docker-compose exec -w /kreme/cli/ kreme node build/index.js prove -j eyJhbGciOiJSUzI1NiIsImtpZCI6IjAzYjJkMjJjMmZlY2Y4NzNlZDE5ZTViOGNmNzA0YWZiN2UyZWQ0YmUiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL2FjY291bnRzLmdvb2dsZS5jb20iLCJhenAiOiI4NzY3MzMxMDUxMTYtaTBoajNzNTNxaWlvNWs5NXBycGZtajBocDBnbWd0b3IuYXBwcy5nb29nbGV1c2VyY29udGVudC5jb20iLCJhdWQiOiI4NzY3MzMxMDUxMTYtaTBoajNzNTNxaWlvNWs5NXBycGZtajBocDBnbWd0b3IuYXBwcy5nb29nbGV1c2VyY29udGVudC5jb20iLCJzdWIiOiIxMDEyMTIxMjA2MTg2NTM3MzIzNTciLCJlbWFpbCI6InRyb25za3l0YWRwb2xlQGdtYWlsLmNvbSIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJhdF9oYXNoIjoiY3doLWp4Z0VmUWtuamlmczkwRUV6dyIsIm5vbmNlIjoiVDVzUWJyaUpTd3dIMUM0U2RQeEprTGJ1Mm9yNGs4IiwibmFtZSI6IlRyb25za3kgVGFkcG9sZSIsInBpY3R1cmUiOiJodHRwczovL2xoNi5nb29nbGV1c2VyY29udGVudC5jb20vLW5sSTJ3S0hRZGZJL0FBQUFBQUFBQUFJL0FBQUFBQUFBQUFBL0FNWnV1Y21OUHZNeS1BMVNoajVGcHBfckhPTGlzcGY2Smcvczk2LWMvcGhvdG8uanBnIiwiZ2l2ZW5fbmFtZSI6IlRyb25za3kiLCJmYW1pbHlfbmFtZSI6IlRhZHBvbGUiLCJsb2NhbGUiOiJlbiIsImlhdCI6MTYxMjI1ODU4MiwiZXhwIjoxNjEyMjYyMTgyLCJqdGkiOiIwNDEzODAzZWM5YzNiMDk4ZTgwNmFiM2VhNjBmZTM2OGJmZjRkNzJkIn0 -e tronskytadpole@gmail.com -s 0 -r /rapidsnark/build/prover -t test -c /zkeys -o /proofs/proof.json -p /proofs/public.json
+```
+
+To verify the proof in the container:
+
+```bash
+docker-compose exec -w /kreme/cli/ kreme node build/index.js verify \
+    -j 79b7b9ac9a06284502bceb80d2b3ec0481f6ed1f14ddcb787a2cb84435b4c8f9 \
+    -p /proofs/proof.json \
+    -z /zkeys/JwtHiddenEmailAddressProver-1024_48.test.zkey \
+    -e 0x29fe2bffec5df2bf054d01cad71a1a388a34906fba15ce8610961cc59271e63a
 ```
