@@ -121,10 +121,6 @@ node build/index.js prove -j eyJhbGciOiJSUzI1NiIsImtpZCI6IjAzYjJkMjJjMmZlY2Y4NzN
 
 ```
 
-**Note**: the `public.json` file may contain the value `null`, possibly due to
-a bug in `rapidsnark`. This is not a breaking issue as the public inputs to the
-circuit can be easily created in code.
-
 ## Tests
 
 To run tests in the `circuits` directory:

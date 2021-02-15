@@ -13,7 +13,7 @@ template JwtHiddenEmailAddressProver(numPreimageB64PaddedBytes, numEmailSubstrB6
     signal private input emailSubstrB64[numEmailSubstrB64Bytes];
     signal private input emailSubstrBitIndex;
     signal private input emailSubstrBitLength;
-    signal private input expectedHash[2];
+    signal input expectedHash[2];
     signal private input emailNameStartPos;
     signal private input emailValueEndPos;
     signal private input numSpacesBeforeColon;
@@ -21,7 +21,7 @@ template JwtHiddenEmailAddressProver(numPreimageB64PaddedBytes, numEmailSubstrB6
     signal private input emailAddress[numEmailUtf8Bytes];
     signal private input numEmailAddressBytes;
     signal private input salt;
-    signal private input emailAddressCommitment;
+    signal input emailAddressCommitment;
 
     // Hash the email address
     component hasher = ByteHasher(numEmailUtf8Bytes);
