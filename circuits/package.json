@@ -36,19 +36,19 @@
     "author": "Koh Wei Jie",
     "license": "Copyright",
     "dependencies": {
-        "@types/jest": "^26.0.14",
-        "@types/node": "^14.11.2",
-        "base64url": "^3.0.1",
-        "assert": "^2.0.0",
+        "@types/jest": "26.0.20",
+        "@types/node": "14.14.28",
+        "base64url": "3.0.1",
+        "assert": "2.0.0",
         "kreme-crypto": "^0.0.1",
         "axios": "^0.21.1",
         "circom": "0.5.38",
         "circom-helper": "0.0.22",
         "circomlib": "0.4.1",
         "jest": "^26.4.2",
-        "shelljs": "^0.8.4",
+        "shelljs": "0.8.4",
         "snarkjs": "0.3.59",
-        "ts-jest": "^26.4.1",
-        "typescript": "^4.0.3"
+        "ts-jest": "26.5.1",
+        "typescript": "4.1.5"
     }
 }
