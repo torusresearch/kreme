@@ -137,7 +137,7 @@ template JwtProver(numPreimageB64PaddedBytes, numEmailSubstrB64Bytes) {
     // - numPreimageB64PaddedBytes is the number of bytes of the
     // base64url-encoded preimage, as a multiple of 64.
     // - numEmailSubstrB64Bytes is the number of bytes of the substring of the
-    //   UTF-8 encoded preimage which contains the string "email":"..@.."
+    //   base64url-encoded preimage which contains the string "email":"..@.."
 
     signal private input preimageB64[numPreimageB64PaddedBytes];
     signal private input emailSubstrB64[numEmailSubstrB64Bytes];
