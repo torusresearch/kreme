@@ -5,6 +5,14 @@
             {
                 "template": "../circuits/circom/jwtProver.circom",
                 "component": "JwtHiddenEmailAddressProver",
+                "params": [1024, 36],
+                "zkeyUrls": {
+                    "test": ""
+                }
+            },
+            {
+                "template": "../circuits/circom/jwtProver.circom",
+                "component": "JwtHiddenEmailAddressProver",
                 "params": [1024, 48],
                 "zkeyUrls": {
                     "test": "https://www.dropbox.com/s/j6o4pef7tv36dlw/JwtHiddenEmailAddressProver-1024_48.test.zkey?dl=1"

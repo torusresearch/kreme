@@ -149,7 +149,7 @@ const prove = async (
     const params: any[] = []
 
     for (const f of fs.readdirSync(compiledDir)) {
-        const regex = /.+-(\d+)_(\d+).+\.zkey$/
+        const regex = /.+-(\d+)_(\d+)\.zkey$/
         const match = f.match(regex)
         if (match) {
             params.push(match.slice(1, 3).map((x) => Number(x)))

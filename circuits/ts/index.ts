@@ -64,8 +64,11 @@ const genJwtHiddenEmailAddressProverCircuitInputs = (
 const genJwtEmailAddressProverCircuitInputs = (
     headerAndPayload: string,
     e: string,
-    supportedEmailB64Lengths: number[],
+    supportedEmailB64LengthsUnsorted: number[],
 ) => {
+    const supportedEmailB64Lengths = supportedEmailB64LengthsUnsorted
+    supportedEmailB64Lengths.sort()
+
     const preimagePaddedBytes = strToPaddedBytes(headerAndPayload)
     const NUM_PREIMAGE_B64_BYTES = preimagePaddedBytes.length
     const email = extractEmailSubstr(headerAndPayload)
@@ -77,6 +80,7 @@ const genJwtEmailAddressProverCircuitInputs = (
             break
         }
     }
+
     if (utf8Len == undefined) {
         throw new Error('Unsupported email length')
     }
