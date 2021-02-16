@@ -30,6 +30,7 @@ const testCircuit = async (
     const { circuitInputs } = genJwtEmailAddressProverCircuitInputs(
         headerAndPayload,
         emailAddress,
+        [48],
     )
 
     const start = Date.now()

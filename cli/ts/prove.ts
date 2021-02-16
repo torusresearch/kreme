@@ -5,6 +5,8 @@ import * as shelljs from 'shelljs'
 import base64url from 'base64url'
 import * as crypto from 'crypto'
 import {
+    calcNumEmailSubstrB64Bytes,
+    calcNumPreimageB64PaddedBytes,
     genJwtHiddenEmailAddressProverCircuitInputs,
 } from 'kreme-circuits'
 
@@ -140,25 +142,48 @@ const prove = async (
     const payload = base64url.decode(s[1])
     const headerAndPayload = s[0] + '.' + s[1]
 
-    const {
-        circuitInputs,
-        numEmailSubstrB64Bytes,
-        numPreimageB64Bytes,
-    } = genJwtHiddenEmailAddressProverCircuitInputs(headerAndPayload, emailAddress, BigInt(salt))
+    // TODO: calculate the circuit parameters
+    // numPreimageB64PaddedBytes strictly depends on the length of
+    // headerAndPayload, while numEmailSubstrB64Bytes should be the smallest
+    // value that fits from the available circuits
+    const params: any[] = []
+
+    for (const f of fs.readdirSync(compiledDir)) {
+        const regex = /.+-(\d+)_(\d+).+\.zkey$/
+        const match = f.match(regex)
+        if (match) {
+            params.push(match.slice(1, 3).map((x) => Number(x)))
+        }
+    }
+    const numPreimageB64PaddedBytes = calcNumPreimageB64PaddedBytes(headerAndPayload)
+    const numEmailSubstrB64Bytes = calcNumEmailSubstrB64Bytes(headerAndPayload)
+    const supportedEmailB64Lengths: number[] = []
+    for (const p of params) {
+        if (p[0] === numPreimageB64PaddedBytes && numEmailSubstrB64Bytes <= p[1]) {
+            supportedEmailB64Lengths.push(p[1])
+        }
+    }
+
+    const r = genJwtHiddenEmailAddressProverCircuitInputs(
+        headerAndPayload,
+        emailAddress,
+        BigInt(salt),
+        supportedEmailB64Lengths,
+    )
 
     const witnessGenExe = path.join(
         path.resolve(compiledDir),
-        `JwtHiddenEmailAddressProver-${numPreimageB64Bytes}_${numEmailSubstrB64Bytes}`
+        `JwtHiddenEmailAddressProver-${r.numPreimageB64Bytes}_${r.numEmailSubstrB64Bytes}`
     )
 
     const zkeyPath = path.join(
         path.resolve(compiledDir),
-        `JwtHiddenEmailAddressProver-${numPreimageB64Bytes}_${numEmailSubstrB64Bytes}.${zkeyType}.zkey`
+        `JwtHiddenEmailAddressProver-${r.numPreimageB64Bytes}_${r.numEmailSubstrB64Bytes}.${zkeyType}.zkey`
     )
 
     fs.writeFileSync(
         inputFilepath,
-        JSON.stringify(circuitInputs),
+        JSON.stringify(r.circuitInputs),
     )
 
     const witnessGenCmd = `${witnessGenExe} ${inputFilepath} ${wtnsFilepath}`

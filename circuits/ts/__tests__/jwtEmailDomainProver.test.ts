@@ -24,7 +24,7 @@ import {
 } from 'kreme-crypto'
 
 const testCircuit = async (headerAndPayload: string) => {
-    const { circuitInputs } = genJwtEmailDomainProverCircuitInputs(headerAndPayload, domain)
+    const { circuitInputs } = genJwtEmailDomainProverCircuitInputs(headerAndPayload, domain, [48])
 
     const start = Date.now()
     const witness = await genWitness(circuit, circuitInputs)

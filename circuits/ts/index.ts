@@ -10,20 +10,41 @@ const stringifyBigInts: (obj: object) => any = ff.utils.stringifyBigInts
 const unstringifyBigInts: (obj: object) => any = ff.utils.unstringifyBigInts
 import base64url from 'base64url'
 import { sha256ToFieldElements, hashBytes } from 'kreme-crypto'
-const SUPPORTED_EMAIL_B64_LENGTHS = [48, 88]
 
-const calcJwtProverParams = (headerAndPayload: string) => {
-    const preimagePaddedBytesLength = (
-        Math.floor((headerAndPayload.length + 64) / 512) + 1
-    ) * 8
+const extractEmailSubstr = (headerAndPayload: string) => {
+    const s = headerAndPayload.split('.')
+    const payload = base64url.decode(s[1])
+    const addr = JSON.parse(payload).email
+    const startIndex = payload.indexOf('"email"')
+    const endIndex = payload.indexOf(addr) + addr.length + 1
+    const email = payload.slice(startIndex, endIndex)
+    return email
+}
+
+const calcNumEmailSubstrB64Bytes = (headerAndPayload: string) => {
+    const email = extractEmailSubstr(headerAndPayload)
+    return Buffer.from(email).length
+}
+
+const calcNumPreimageB64PaddedBytes = (headerAndPayload: string) => {
+    // Convert the input string to a buffer
+    const buf = Buffer.from(headerAndPayload, 'utf8')
+    const len = 1 + (buf.length * 8)
+    const nBlocks = Math.floor((len + 64) / 512) + 1
+    return (nBlocks * 512) / 8
 }
 
 const genJwtHiddenEmailAddressProverCircuitInputs = (
     headerAndPayload: string,
     e: string,
     salt: BigInt,
+    supportedEmailB64Lengths: number[],
 ) => {
-    const r = genJwtEmailAddressProverCircuitInputs(headerAndPayload, e)
+    const r = genJwtEmailAddressProverCircuitInputs(
+        headerAndPayload,
+        e,
+        supportedEmailB64Lengths,
+    )
     const circuitInputs = r.circuitInputs
 
     const emailAddressCommitment = hashBytes(
@@ -40,18 +61,17 @@ const genJwtHiddenEmailAddressProverCircuitInputs = (
     }
 }
 
-const genJwtEmailAddressProverCircuitInputs = (headerAndPayload: string, e: string) => {
+const genJwtEmailAddressProverCircuitInputs = (
+    headerAndPayload: string,
+    e: string,
+    supportedEmailB64Lengths: number[],
+) => {
     const preimagePaddedBytes = strToPaddedBytes(headerAndPayload)
     const NUM_PREIMAGE_B64_BYTES = preimagePaddedBytes.length
-    const s = headerAndPayload.split('.')
-    const payload = base64url.decode(s[1])
-    const addr = JSON.parse(payload).email
-    const startIndex = payload.indexOf('"email"')
-    const endIndex = payload.indexOf(addr) + addr.length + 1
-    const email = payload.slice(startIndex, endIndex)
+    const email = extractEmailSubstr(headerAndPayload)
 
     let utf8Len
-    for (const len of SUPPORTED_EMAIL_B64_LENGTHS) {
+    for (const len of supportedEmailB64Lengths) {
         utf8Len = len * 6 / 8
         if (utf8Len >= Buffer.from(email).length) {
             break
@@ -119,19 +139,18 @@ const genJwtEmailAddressProverCircuitInputs = (headerAndPayload: string, e: stri
     }
 }
 
-const genJwtEmailDomainProverCircuitInputs = (headerAndPayload: string, d: string) => {
+const genJwtEmailDomainProverCircuitInputs = (
+    headerAndPayload: string,
+    d: string,
+    supportedEmailB64Lengths: number[],
+) => {
     const domain = `@${d}"`
     const preimagePaddedBytes = strToPaddedBytes(headerAndPayload)
     const NUM_PREIMAGE_B64_BYTES = preimagePaddedBytes.length
-    const s = headerAndPayload.split('.')
-    const payload = base64url.decode(s[1])
-    const addr = JSON.parse(payload).email
-    const startIndex = payload.indexOf('"email"')
-    const endIndex = payload.indexOf(addr) + addr.length + 1
-    const email = payload.slice(startIndex, endIndex)
+    const email = extractEmailSubstr(headerAndPayload)
 
     let utf8Len
-    for (const len of SUPPORTED_EMAIL_B64_LENGTHS) {
+    for (const len of supportedEmailB64Lengths) {
         utf8Len = len * 6 / 8
         if (utf8Len >= Buffer.from(email).length) {
             break
@@ -658,4 +677,6 @@ export {
     genJwtEmailDomainProverCircuitInputs,
     genJwtEmailAddressProverCircuitInputs,
     genJwtHiddenEmailAddressProverCircuitInputs,
+    calcNumPreimageB64PaddedBytes,
+    calcNumEmailSubstrB64Bytes,
 }

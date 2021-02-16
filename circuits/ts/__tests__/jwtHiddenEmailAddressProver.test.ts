@@ -33,6 +33,7 @@ const testCircuit = async (
         headerAndPayload,
         emailAddress,
         salt,
+        [48],
     )
 
     const start = Date.now()
