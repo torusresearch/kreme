@@ -31,8 +31,8 @@ const configureSubparsers = (subparsers: ArgumentParser) => {
     )
 }
 
-const URL = 'https://www.dropbox.com/s/02xi5ygo59o33oh/powersOfTau28_hez_final_20.ptau?dl=1'
-const SIZE = '1.13G'
+const URL = 'https://www.dropbox.com/s/v7dqr1ytmhxyl2u/powersOfTau28_hez_final_21.ptau?dl=1'
+const SIZE = '2.3G'
 
 const downloadPhase1 = async (filepath: string, noClobber: boolean) => {
     const checksumFile = path.join(

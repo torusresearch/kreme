@@ -1,3 +1,5 @@
+docs/book/*
+
 input.*.json
 *.wtns
 proof.json

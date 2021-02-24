@@ -1,0 +1,8 @@
+[book]
+authors = ["Koh Wei Jie"]
+language = "en"
+multilingual = false
+src = "src"
+title = "kreme by Torus Labs"
+[output.html]
+mathjax-support = true

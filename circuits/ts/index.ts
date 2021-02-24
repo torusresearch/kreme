@@ -342,6 +342,7 @@ const compile = (
     for (const f of [r1csFile, wasmFile, watFile, cFile, symFile, witnessGenFile]) {
         if (!fs.existsSync(f)) {
             exists = false
+            break
         }
     }
     if (exists && noClobber) {
