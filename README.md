@@ -98,6 +98,7 @@ email address of up to `___` bytes.
 ### Compile test circuits
 
 ```
+cd cli &&
 npm run compile-example
 ```
 
