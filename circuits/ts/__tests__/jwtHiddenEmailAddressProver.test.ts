@@ -43,7 +43,7 @@ const testCircuit = async (
     console.log('Witness generation took', duration, 'seconds')
     expect(witness.length > 0).toBeTruthy()
 
-    // Change the commitment and the circut fail
+    // Change the commitment and the circuit should fail
     const bad = circuitInputs
     bad.emailAddressCommitment = '0'
     try {
@@ -80,31 +80,31 @@ describe('JWTProver circuit', () => {
         await testCircuit(headerAndPayload, emailAddress, genRandomSalt())
     })
 
-    //it('Should prove the existence of a domain name in the correct position and verify the hash (2)', async () => {
-        //const headerAndPayload =
-            //base64url.encode(
-                //'{"alg":"RS256","kid":"03b2d22c2fecf873ed19e5b8cf704afb7e2ed4be",'
-                //+ '"typ":"JWT"}'
-            //)
-            //+ '.'
-        //+ base64url.encode(
-            //`{${email},"sub":"1234567890","name":"John Doe","iat":1516239022}`
-        //)
+    it('Should prove the existence of a domain name in the correct position and verify the hash (2)', async () => {
+        const headerAndPayload =
+            base64url.encode(
+                '{"alg":"RS256","kid":"03b2d22c2fecf873ed19e5b8cf704afb7e2ed4be",'
+                + '"typ":"JWT"}'
+            )
+            + '.'
+        + base64url.encode(
+            `{${email},"sub":"1234567890","name":"John Doe","iat":1516239022}`
+        )
 
-        //await testCircuit(headerAndPayload, emailAddress, genRandomSalt())
-    //})
+        await testCircuit(headerAndPayload, emailAddress, genRandomSalt())
+    })
 
-    //it('Should prove the existence of a domain name in the correct position and verify the hash (2)', async () => {
-        //const headerAndPayload =
-            //base64url.encode(
-                //'{"alg":"RS256","kid":"03b2d22c2fecf873ed19e5b8cf704afb7e2ed4be",'
-                //+ '"typ":"JWT"}'
-            //)
-            //+ '.'
-        //+ base64url.encode(
-            //`{"sub":"1234567890","name":"John Doe Blah Blah Blah","iat":1516239022,${email}}`
-        //)
+    it('Should prove the existence of a domain name in the correct position and verify the hash (2)', async () => {
+        const headerAndPayload =
+            base64url.encode(
+                '{"alg":"RS256","kid":"03b2d22c2fecf873ed19e5b8cf704afb7e2ed4be",'
+                + '"typ":"JWT"}'
+            )
+            + '.'
+        + base64url.encode(
+            `{"sub":"1234567890","name":"John Doe Blah Blah Blah","iat":1516239022,${email}}`
+        )
 
-        //await testCircuit(headerAndPayload, emailAddress, genRandomSalt())
-    //})
+        await testCircuit(headerAndPayload, emailAddress, genRandomSalt())
+    })
 })

@@ -149,7 +149,7 @@ const prove = async (
     const params: any[] = []
 
     for (const f of fs.readdirSync(compiledDir)) {
-        const regex = /.+-(\d+)_(\d+)\.zkey$/
+        const regex = /.+-(\d+)_(\d+)\..+\.zkey$/
         const match = f.match(regex)
         if (match) {
             params.push(match.slice(1, 3).map((x) => Number(x)))
@@ -195,7 +195,6 @@ const prove = async (
     }
 
     const proveCmd = `${rapidsnarkPath} ${zkeyPath} ${wtnsFilepath} ${outputPath} ${publicJsonPath}`
-    console.log(proveCmd)
     const proveOut = shelljs.exec(proveCmd)
     if (proveOut.code !== 0 || proveOut.stderr) {
         console.error('Error: could not generate proof.')
