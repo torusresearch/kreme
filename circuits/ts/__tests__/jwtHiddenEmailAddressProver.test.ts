@@ -33,7 +33,7 @@ const testCircuit = async (
         headerAndPayload,
         emailAddress,
         salt,
-        [48],
+        [64],
     )
 
     const start = Date.now()
@@ -62,8 +62,8 @@ const testCircuit = async (
 }
 
 const circuit = 'jwtHiddenEmailAddressProver_test'
-const emailAddress = 'alice@company.xyz'
-const email = `"email":"{emailAddress}"`
+const emailAddress = 'alice@company.xyz00000000000000000000'
+const email = `"email":"${emailAddress}"`
 
 describe('JWTProver circuit', () => {
     it('Should prove the existence of a domain name in the correct position and verify the hash (1)', async () => {
@@ -102,7 +102,7 @@ describe('JWTProver circuit', () => {
             )
             + '.'
         + base64url.encode(
-            `{"sub":"1234567890","name":"John Doe Blah Blah Blah","iat":1516239022,${email}}`
+            `{"sub":"1234567890","name":"John Doe","iat":1516239022,${email}}`
         )
 
         await testCircuit(headerAndPayload, emailAddress, genRandomSalt())
