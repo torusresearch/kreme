@@ -7,7 +7,7 @@
                 "component": "JwtHiddenEmailAddressProver",
                 "params": [1024, 48],
                 "zkeyUrls": {
-                    "test": ""
+                    "test": "https://www.dropbox.com/s/k38h5duuicdmamz/JwtHiddenEmailAddressProver-1024_48.test.zkey?dl=1"
                 }
             },
             {
@@ -15,7 +15,7 @@
                 "component": "JwtHiddenEmailAddressProver",
                 "params": [1024, 64],
                 "zkeyUrls": {
-                    "test": ""
+                    "test": "https://www.dropbox.com/s/bscho8mldff8ssu/JwtHiddenEmailAddressProver-1024_64.test.zkey?dl=1"
                 }
             }
     ]
