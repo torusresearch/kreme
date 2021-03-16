@@ -6,7 +6,6 @@ format, clone this repository, install
 [`mdbook`](https://github.com/rust-lang/mdBook), run `./docs/serve.sh`, and
 navigate to [127.0.0.1:3000/](http://127.0.0.1:3000/).
 
-
 ```bash
 cargo install mdbook
 ```

@@ -87,3 +87,9 @@ To determine how many constraints a circuit has, use `npx snarkjs r1cs info
 
 Use [`multisetups`](http://github.com/appliedzkp/multisetups) to run a trusted
 setup.
+
+The final, production-ready `.zkey` files should be named according to this format:
+
+```
+JwtHiddenEmailAddressProver-<numPreimageB64PaddedBytes>_<numEmailSubstrB64Bytes>.prod.zkey
+```
