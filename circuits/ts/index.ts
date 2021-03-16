@@ -66,7 +66,6 @@ const genJwtEmailAddressProverCircuitInputs = (
     e: string,
     supportedEmailB64LengthsUnsorted: number[],
 ) => {
-    debugger
     const supportedEmailB64Lengths = supportedEmailB64LengthsUnsorted
     supportedEmailB64Lengths.sort()
 
