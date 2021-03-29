@@ -31,7 +31,7 @@ In this case, the salt is `0` and the length is 48, which is a hardcoded
 parameter to the circuit to generate the proof above. The commitment is:
 
 ```
-1fc5f1ed6f4cef708c2301f56df91d84ae25b531319cd4b7d9d8a760fc983041
+1f4b67cd119ac684b19b5257be36a49f8d90fe905b47da40c029df0f508ed817
 ```
 
 ## Verify a proof
@@ -42,7 +42,7 @@ To verify the proof, run:
 node build/index.js verify -j 79b7b9ac9a06284502bceb80d2b3ec0481f6ed1f14ddcb787a2cb84435b4c8f9 \
     -p ./proof.json \
     -z ./build/prodCircuits/JwtHiddenEmailAddressProver-1024_48.test.zkey \
-    -e 0x1fc5f1ed6f4cef708c2301f56df91d84ae25b531319cd4b7d9d8a760fc983041
+    -e 1f4b67cd119ac684b19b5257be36a49f8d90fe905b47da40c029df0f508ed817
 ```
 
 Note that `79b7b9ac9a06284502bceb80d2b3ec0481f6ed1f14ddcb787a2cb84435b4c8f9` is

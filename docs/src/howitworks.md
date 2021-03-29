@@ -38,19 +38,19 @@ The `JwtHiddenEmailAddressProver` circuit accepts the following inputs:
 
 | Input | Type | Description|
 |-|-|-|
-| preimageB64[numPreimageB64PaddedBytes] | Private | The base64url-encoded padded SHA256 hash preimage |
-| emailSubstrB64[numEmailSubstrB64Bytes] | Private | The base64url-encoded substring of `preimageB64` which contains the `"email":"..."` substring |
-| emailSubstrBitIndex | Private | The index of the bit at which the `"email":"..."` substring begins in the UTF-8-converted `emailSubstrB64` |
-| emailSubstrBitLength | Private | The number of bits in the UTF-8-converted `emailSubstrB64` substring |
-| expectedHash[2] | Public | The SHA256 hash represented as two 128-bit values. |
-| emailNameStartPos | Private | The byte position of the first quotation mark `"email":"..."` in the UTF-8 encoded email substring |
-| emailValueEndPos | Private |  The byte position of the last quotation mark `"email":"..."` in the UTF-8 encoded email substring|
-| numSpacesBeforeColon | Private input | The number of spaces before the colon |
-| numSpacesAfterColon | Private input | The number of spaces after the colon |
-| emailAddress[numEmailUtf8Bytes] | Private | The email address as a UTF-8 byte array |
-| numEmailAddressBytes | Private | The number of bytes  |
-| salt | Private |  |
-| emailAddressCommitment | Public |  |
+| `preimageB64[numPreimageB64PaddedBytes]` | Private | The base64url-encoded padded SHA256 hash preimage |
+| `emailSubstrB64[numEmailSubstrB64Bytes]` | Private | The base64url-encoded substring of `preimageB64` which contains the `"email":"..."` substring |
+| `emailSubstrBitIndex` | Private | The index of the bit at which the `"email":"..."` substring begins in the UTF-8-converted `emailSubstrB64` |
+| `emailSubstrBitLength` | Private | The number of bits in the UTF-8-converted `emailSubstrB64` substring |
+| `expectedHash[2]` | Public | The SHA256 hash represented as two 128-bit values. |
+| `emailNameStartPos` | Private | The byte position of the first quotation mark `"email":"..."` in the UTF-8 encoded email substring |
+| `emailValueEndPos` | Private |  The byte position of the last quotation mark `"email":"..."` in the UTF-8 encoded email substring|
+| `numSpacesBeforeColon` | Private input | The number of spaces before the colon |
+| `numSpacesAfterColon` | Private input | The number of spaces after the colon |
+| `emailAddress[numEmailUtf8Bytes]` | Private | The email address as a UTF-8 byte array |
+| `numEmailAddressBytes` | Private | The number of bytes  |
+| `salt` | Private | The salt which increases the security of the email address commitment |
+| `emailAddressCommitment` | Public | The commitment to a salted email address |
 
 The `JwtHiddenEmailAddressProver` circuit is parameterised as such:
 
@@ -60,10 +60,42 @@ The `JwtHiddenEmailAddressProver` circuit is parameterised as such:
 The variable `numEmailUtf8Bytes` is computed as such:
     - `var numEmailUtf8Bytes = numEmailSubstrB64Bytes * 6 / 8;`
 
-### sub-circuits
+### Sub-circuits
 
 The `JwtHiddenEmailAddressProver` circuit is comprised of several sub-circuits.
 
 #### `ByteHasher`
 
+Computes the commitment to the salted email address. This allows the circuit to
+check if the commitment is valid.
 
+#### `JwtEmailAddressProver`
+
+Proves that the specified email address exists in the JWT preimage.
+
+#### `SubstringMatcher`
+
+Checks that `emailSubstrB64` is a substring of the larger `preimageB64`.
+
+This is needed as performing circuit operations on `emailSubstrB64` is much
+more efficient than doing them on `preimageB64`.
+
+#### `Base64Decoder`
+
+Converts the base64url bytes of `emailSubstrB64` to UTF-8 bytes.
+
+#### `Slicer`
+
+Extracts the substring `"email":"..."` from the UTF-8 representation of
+`emailSubstrB64`.
+
+### `Sha256Hasher`
+
+Hashes the preimage so the circuit can check that the hash is valid.
+
+### `EmailAddressProver`
+
+Checks the validity of the substring `"email":"..."`. Specifically, it checks
+for the presence of quotation marks, the colon, spaces, the `email` key, etc are in
+expected locations. It also checks that the last quotation mark is not preceded
+by the JSON escape sequence `\\`.
