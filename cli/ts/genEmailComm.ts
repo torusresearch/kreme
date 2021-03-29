@@ -54,6 +54,7 @@ const genEmailComm = async (
     salt: string,
     length: number,
 ) => {
+
     let saltAsHex
     if (salt.toString().startsWith('0x')) {
         saltAsHex = BigInt(salt)

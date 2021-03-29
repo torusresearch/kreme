@@ -657,7 +657,7 @@ const plaintext2paddedBitArray = (plaintext: string, chunkLength: number) => {
 }
 
 const genEmailComm = (email: string, salt: BigInt, length: number): BigInt => {
-    const ba = strToByteArr(email, length)
+    const ba = strToByteArr(email + '"', length)
     const comm = hashBytes(
         ba.map((x) => BigInt(x)),
         salt,

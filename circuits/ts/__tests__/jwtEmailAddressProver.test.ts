@@ -49,8 +49,8 @@ const testCircuit = async (
 }
 
 const circuit = 'jwtEmailAddressProver_test'
-const emailAddress = 'alice@company.xyz'
-const email = `"email":"{emailAddress}"`
+const emailAddress = 'alice@company.xyz"'
+const email = `"email":"${emailAddress}`
 
 describe('JWTProver circuit', () => {
     it('Should prove the existence of a domain name in the correct position and verify the hash (1)', async () => {

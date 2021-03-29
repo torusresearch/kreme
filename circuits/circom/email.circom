@@ -126,21 +126,21 @@ template EmailAddressProver(numBytes) {
     emailJsonField.numSpacesBeforeColon <== numSpacesBeforeColon;
     emailJsonField.numSpacesAfterColon <== numSpacesAfterColon;
 
-    /*// 2. Check that emailSubstr contains emailAddress*/
-    /*component slice = Slicer(numBytes);*/
-    /*slice.startIndex <== emailValueEndPos - numEmailAddressBytes + 1;*/
-    /*slice.len <== numEmailAddressBytes;*/
-    /*for (var i = 0; i < numBytes; i ++) {*/
-        /*slice.in[i] <== emailSubstr[i];*/
-    /*}*/
+    // 2. Check that emailSubstr contains emailAddress
+    component slice = Slicer(numBytes);
+    slice.startIndex <== emailValueEndPos - numEmailAddressBytes + 1;
+    slice.len <== numEmailAddressBytes;
+    for (var i = 0; i < numBytes; i ++) {
+        slice.in[i] <== emailSubstr[i];
+    }
 
-    /*component endsWith = EndsWith(numBytes);*/
-    /*endsWith.targetLen <== numEmailAddressBytes;*/
-    /*for (var i = 0; i < numBytes; i ++) {*/
-        /*endsWith.in[i] <== slice.out[i];*/
-        /*endsWith.target[i] <== emailAddress[i];*/
-    /*}*/
-    /*endsWith.out === 1;*/
+    component endsWith = EndsWith(numBytes);
+    endsWith.targetLen <== numEmailAddressBytes;
+    for (var i = 0; i < numBytes; i ++) {
+        endsWith.in[i] <== slice.out[i];
+        endsWith.target[i] <== emailAddress[i];
+    }
+    endsWith.out === 1;
 }
 
 // Proves the presence of a domain name in the `email` field of a secret JSON

@@ -28,7 +28,7 @@ describe('JSON field prover for an email domain name', () => {
         const numSpacesBeforeColon = 1
         const numSpacesAfterColon = 1
         const emailValueEndPos = emailNameStartPos + 7 + numSpacesBeforeColon + 1 +
-            numSpacesAfterColon + numEmailAddressBytes 
+            numSpacesAfterColon + numEmailAddressBytes
 
         const byteArrAsHex = (s) => s.map((x) => x.toString(16)).join('')
 
@@ -50,6 +50,7 @@ describe('JSON field prover for an email domain name', () => {
             numSpacesAfterColon,
             numEmailAddressBytes,
         })
+        debugger
         const witness = await genWitness(circuit, circuitInputs)
         expect(witness.length > 0).toBeTruthy()
     })

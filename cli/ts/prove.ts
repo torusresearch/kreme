@@ -166,7 +166,7 @@ const prove = async (
 
     const r = genJwtHiddenEmailAddressProverCircuitInputs(
         headerAndPayload,
-        emailAddress,
+        emailAddress + '"',
         BigInt(salt),
         supportedEmailB64Lengths,
     )
